@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benson Lin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #F7F4EF;
+    --cream-dark: #EDE8DF;
+    --navy: #1C2340;
+    --navy-mid: #2E3A5C;
+    --burgundy: #7D2E3A;
+    --burgundy-light: #C4848F;
+    --text-muted: #6B6760;
+    --border: #D8D2C8;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--navy);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 3rem;
+    background: rgba(247, 244, 239, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--navy);
+    letter-spacing: 0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--burgundy); }
+
+  section { padding: 6rem 3rem; max-width: 900px; margin: 0 auto; }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 8rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .hero-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--burgundy);
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+  }
+
+  .hero-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 8vw, 6rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--navy);
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-name em {
+    font-style: italic;
+    color: var(--burgundy);
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    max-width: 520px;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+    line-height: 1.8;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 0.7rem 1.8rem;
+    background: var(--navy);
+    color: var(--cream);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 400;
+    transition: background 0.2s;
+    border-radius: 2px;
+  }
+
+  .btn-primary:hover { background: var(--burgundy); }
+
+  .btn-ghost {
+    display: inline-block;
+    padding: 0.7rem 1.8rem;
+    border: 0.5px solid var(--navy);
+    color: var(--navy);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 400;
+    transition: all 0.2s;
+    border-radius: 2px;
+  }
+
+  .btn-ghost:hover { border-color: var(--burgundy); color: var(--burgundy); }
+
+  .hero-scroll {
+    margin-top: 4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-muted);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 40px;
+    height: 0.5px;
+    background: var(--border);
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--burgundy);
+    margin-bottom: 0.75rem;
+    font-weight: 400;
+  }
+
+  .section-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 300;
+    color: var(--navy);
+    margin-bottom: 2.5rem;
+    line-height: 1.2;
+  }
+
+  /* ABOUT */
+  #about {
+    background: var(--cream-dark);
+    max-width: 100%;
+    padding: 6rem 3rem;
+  }
+
+  .about-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .about-photo { position: relative; }
+
+  .about-photo img {
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    object-position: top;
+    filter: grayscale(15%);
+    display: block;
+    position: relative;
+    z-index: 1;
+  }
+
+  .photo-frame {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: -12px;
+    bottom: -12px;
+    border: 0.5px solid var(--burgundy-light);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .about-text p {
+    color: var(--text-muted);
+    font-weight: 300;
+    margin-bottom: 1.2rem;
+    font-size: 0.95rem;
+    line-height: 1.85;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem 2rem;
+    margin-top: 1.5rem;
+  }
+
+  .skill-item {
+    font-size: 13px;
+    color: var(--navy-mid);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .skill-item::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: var(--burgundy);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* EXPERIENCE */
+  .exp-item {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 2rem;
+    padding: 2rem 0;
+    border-top: 0.5px solid var(--border);
+  }
+
+  .exp-item:last-child { border-bottom: 0.5px solid var(--border); }
+
+  .exp-date {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    padding-top: 3px;
+    font-weight: 300;
+  }
+
+  .exp-company {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--burgundy);
+    margin-bottom: 0.2rem;
+    font-weight: 400;
+  }
+
+  .exp-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--navy);
+    margin-bottom: 0.75rem;
+  }
+
+  .exp-desc {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    font-weight: 300;
+    line-height: 1.75;
+  }
+
+  .exp-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border: 0.5px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  /* PROJECTS */
+  #projects {
+    background: var(--cream-dark);
+    max-width: 100%;
+    padding: 6rem 3rem;
+  }
+
+  .projects-inner { max-width: 900px; margin: 0 auto; }
+
+  .project-card {
+    background: var(--cream);
+    border: 0.5px solid var(--border);
+    padding: 2rem 2.25rem;
+    margin-bottom: 1.25rem;
+    transition: border-color 0.2s;
+  }
+
+  .project-card:hover { border-color: var(--burgundy-light); }
+
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+  }
+
+  .project-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.35rem;
+    font-weight: 400;
+    color: var(--navy);
+  }
+
+  .project-link {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--burgundy);
+    text-decoration: none;
+    border-bottom: 0.5px solid var(--burgundy-light);
+    padding-bottom: 1px;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+    margin-left: 1rem;
+    margin-top: 4px;
+  }
+
+  .project-link:hover { opacity: 0.7; }
+
+  .project-desc {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    font-weight: 300;
+    line-height: 1.75;
+    margin-bottom: 1rem;
+  }
+
+  /* CONTACT */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .contact-item {
+    padding: 1.25rem 1.5rem;
+    border: 0.5px solid var(--border);
+    text-decoration: none;
+    color: var(--navy);
+    transition: border-color 0.2s, color 0.2s;
+    display: block;
+  }
+
+  .contact-item:hover { border-color: var(--burgundy); color: var(--burgundy); }
+
+  .contact-label {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+    font-weight: 400;
+  }
+
+  .contact-value { font-size: 0.9rem; font-weight: 400; }
+
+  footer {
+    text-align: center;
+    padding: 2.5rem;
+    border-top: 0.5px solid var(--border);
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+  }
+
+  @media (max-width: 680px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    section { padding: 4rem 1.5rem; }
+    #about, #projects { padding: 4rem 1.5rem; }
+    .about-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+    .exp-item { grid-template-columns: 1fr; gap: 0.5rem; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .hero-name { font-size: 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Benson Lin</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section id="hero" style="padding-left:3rem;padding-right:3rem;">
+  <p class="hero-eyebrow">Software Engineer — Boston, MA</p>
+  <h1 class="hero-name">Benson<br><em>Lin</em></h1>
+  <p class="hero-sub">I build full-stack systems with a focus on data pipelines, real-time applications, and workflow intelligence. Currently finishing my M.S. in Computer Science at WPI.</p>
+  <div class="hero-cta">
+    <a href="#projects" class="btn-primary">View Work</a>
+    <a href="#contact" class="btn-ghost">Get in Touch</a>
+  </div>
+  <div class="hero-scroll">
+    <span class="scroll-line"></span>
+    Scroll to explore
+  </div>
+</section>
+
+<section id="about" style="padding-left:3rem;padding-right:3rem;">
+  <div class="about-inner">
+    <div class="about-photo">
+      <div class="photo-frame"></div>
+      <!-- REPLACE THE src BELOW with the path to your actual headshot photo -->
+      <img src="headshot.jpg" alt="Benson Lin" />
+    </div>
+    <div class="about-text">
+      <p class="section-label">About</p>
+      <h2 class="section-heading" style="margin-bottom:1.5rem;">Building things that<br><em style="font-family:'Cormorant Garamond',serif;font-style:italic;">actually work</em></h2>
+      <p>Most recently, I spent 8 months on a Microsoft-sponsored project building a telemetry pipeline that captures real-time UI events and reconstructs user workflows — using Hidden Markov Models and Viterbi decoding to detect failure patterns before they escalate to support.</p>
+      <p>Before that, I was in Venice analyzing 4,000+ geospatial data points to model accessibility across 126 historic city islands. On the side, I've built a real-time MBTA commuter chat platform and a hospital wayfinding system for Mass General Brigham.</p>
+      <p>I'm seeking Junior SWE and Full Stack Engineer roles for Summer 2026.</p>
+      <div class="skills-grid" style="margin-top:1.8rem;">
+        <span class="skill-item">Python</span>
+        <span class="skill-item">TypeScript</span>
+        <span class="skill-item">React / Next.js</span>
+        <span class="skill-item">Node.js</span>
+        <span class="skill-item">PostgreSQL</span>
+        <span class="skill-item">Docker</span>
+        <span class="skill-item">AWS (EC2, RDS)</span>
+        <span class="skill-item">Java</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <p class="section-label">Experience</p>
+  <h2 class="section-heading">Where I've worked</h2>
+
+  <div class="exp-item">
+    <div class="exp-date">Aug 2025 – Mar 2026</div>
+    <div>
+      <p class="exp-company">Microsoft — Sponsored Project</p>
+      <p class="exp-title">Software Engineer</p>
+      <p class="exp-desc">Built an end-to-end telemetry pipeline capturing real-time UI events via Win32/pywinauto and converting raw signals into structured semantic workflow graphs. Trained Hidden Markov Models on observed UI sequences and applied Viterbi decoding to flag anomalous workflow patterns before support escalation. Implemented heuristic detection (dead clicks, rage clicks, cyclical navigation) validated against a human-labeled dataset using precision, recall, and F1 metrics.</p>
+      <div class="exp-tags">
+        <span class="tag">Python</span>
+        <span class="tag">Win32</span>
+        <span class="tag">HMM / Viterbi</span>
+        <span class="tag">Event Processing</span>
+        <span class="tag">OCR</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-item">
+    <div class="exp-date">Mar 2025 – Jun 2025</div>
+    <div>
+      <p class="exp-company">SerenDPT — Venice, Italy</p>
+      <p class="exp-title">Data Analyst / Software Developer</p>
+      <p class="exp-desc">Developed data processing workflows in Node.js and Python to clean and analyze 4,000+ infrastructure data points across 126 historic city islands. Conducted geospatial analysis with ArcGIS to quantify accessibility and congestion patterns across 100+ regions. Designed a multi-factor livability scoring system aggregating infrastructure, accessibility, and tourism-load metrics. Published an open-source dataset and accompanying research.</p>
+      <div class="exp-tags">
+        <span class="tag">Python</span>
+        <span class="tag">Node.js</span>
+        <span class="tag">ArcGIS</span>
+        <span class="tag">Geospatial Analysis</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects" style="padding-left:3rem;padding-right:3rem;">
+  <div class="projects-inner">
+    <p class="section-label">Projects</p>
+    <h2 class="section-heading">Selected work</h2>
+
+    <div class="project-card">
+      <div class="project-header">
+        <p class="project-name">Huddle Chat</p>
+        <a href="https://huddle.stoiber.network/" target="_blank" class="project-link">Live ↗</a>
+      </div>
+      <p class="project-desc">A full-stack commuter chat platform built in Next.js and TypeScript with real-time messaging — threading, reactions, replies — integrated with live MBTA train and stop APIs. Engineered concurrent message delivery and validated the platform in production during a professor's live MBTA commute. Deployed with Docker and Vercel.</p>
+      <div class="exp-tags">
+        <span class="tag">Next.js</span>
+        <span class="tag">TypeScript</span>
+        <span class="tag">MBTA API</span>
+        <span class="tag">Docker</span>
+        <span class="tag">Vercel</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-header">
+        <p class="project-name">Mass General Brigham — Hospital Routing</p>
+        <a href="https://github.com/Zirins" target="_blank" class="project-link">GitHub ↗</a>
+      </div>
+      <p class="project-desc">Full-stack hospital wayfinding system for MGB with A* and Dijkstra pathfinding algorithms and dynamic SVG multi-floor visualizations for real-time indoor navigation. Led engineering in an Agile team of 10+, managing PRs and CI pipelines via GitHub Actions and Docker — achieving the highest evaluation tier across all 3 sprint demos.</p>
+      <div class="exp-tags">
+        <span class="tag">React</span>
+        <span class="tag">TypeScript</span>
+        <span class="tag">A* / Dijkstra</span>
+        <span class="tag">SVG</span>
+        <span class="tag">GitHub Actions</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <p class="section-label">Contact</p>
+  <h2 class="section-heading">Let's connect</h2>
+  <p style="color:var(--text-muted);font-weight:300;max-width:480px;margin-bottom:2rem;font-size:0.95rem;">I'm actively seeking Junior SWE, Full Stack Engineer, and SWE Intern roles for Summer 2026. Feel free to reach out.</p>
+  <div class="contact-grid">
+    <a href="mailto:BensonLin9801@gmail.com" class="contact-item">
+      <p class="contact-label">Email</p>
+      <p class="contact-value">BensonLin9801@gmail.com</p>
+    </a>
+    <a href="https://www.linkedin.com/in/benson-lin-bl" target="_blank" class="contact-item">
+      <p class="contact-label">LinkedIn</p>
+      <p class="contact-value">benson-lin-bl</p>
+    </a>
+    <a href="https://github.com/Zirins" target="_blank" class="contact-item">
+      <p class="contact-label">GitHub</p>
+      <p class="contact-value">github.com/Zirins</p>
+    </a>
+    <a href="tel:8188521807" class="contact-item">
+      <p class="contact-label">Phone</p>
+      <p class="contact-value">(818) 852-1807</p>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Benson Lin — Built with care</p>
+</footer>
+
+</body>
+</html>
