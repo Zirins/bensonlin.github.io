@@ -27,8 +27,17 @@
     color: var(--navy);
     font-size: 15px;
     line-height: 1.7;
+    overflow-x: hidden;
   }
 
+  /* Page load animation */
+  body.loading { opacity: 0; }
+  body { 
+    opacity: 1;
+    transition: opacity 0.6s ease-out;
+  }
+
+  /* Nav with scroll transition */
   nav {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -37,9 +46,17 @@
     justify-content: space-between;
     align-items: center;
     padding: 1.2rem 3rem;
+    background: transparent;
+    backdrop-filter: blur(0px);
+    border-bottom: 0.5px solid transparent;
+    transition: background 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease, padding 0.3s ease;
+  }
+
+  nav.scrolled {
     background: rgba(247, 244, 239, 0.92);
-    backdrop-filter: blur(8px);
-    border-bottom: 0.5px solid var(--border);
+    backdrop-filter: blur(12px);
+    border-bottom-color: var(--border);
+    padding: 1rem 3rem;
   }
 
   .nav-logo {
@@ -63,12 +80,37 @@
     font-weight: 400;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    transition: color 0.2s;
+    transition: color 0.25s ease;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--burgundy);
+    transition: width 0.3s ease;
   }
 
   .nav-links a:hover { color: var(--burgundy); }
+  .nav-links a:hover::after { width: 100%; }
 
   section { padding: 6rem 3rem; max-width: 900px; margin: 0 auto; }
+
+  /* Fade-in animation for sections */
+  .fade-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  }
+
+  .fade-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
   /* HERO */
   #hero {
@@ -88,6 +130,9 @@
     color: var(--burgundy);
     margin-bottom: 1.5rem;
     font-weight: 400;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: heroFadeIn 0.6s ease-out 0.2s forwards;
   }
 
   .hero-name {
@@ -98,6 +143,9 @@
     color: var(--navy);
     margin-bottom: 1.5rem;
     letter-spacing: -0.01em;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: heroFadeIn 0.6s ease-out 0.35s forwards;
   }
 
   .hero-name em {
@@ -112,6 +160,9 @@
     margin-bottom: 2.5rem;
     font-weight: 300;
     line-height: 1.8;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: heroFadeIn 0.6s ease-out 0.5s forwards;
   }
 
   .hero-cta {
@@ -119,6 +170,16 @@
     gap: 1rem;
     align-items: center;
     flex-wrap: wrap;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: heroFadeIn 0.6s ease-out 0.65s forwards;
+  }
+
+  @keyframes heroFadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .btn-primary {
@@ -131,11 +192,16 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     font-weight: 400;
-    transition: background 0.2s;
+    transition: all 0.3s ease;
     border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(28, 35, 64, 0);
   }
 
-  .btn-primary:hover { background: var(--burgundy); }
+  .btn-primary:hover { 
+    background: var(--burgundy); 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(125, 46, 58, 0.2);
+  }
 
   .btn-ghost {
     display: inline-block;
@@ -147,11 +213,15 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     font-weight: 400;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     border-radius: 2px;
   }
 
-  .btn-ghost:hover { border-color: var(--burgundy); color: var(--burgundy); }
+  .btn-ghost:hover { 
+    border-color: var(--burgundy); 
+    color: var(--burgundy);
+    transform: translateY(-2px);
+  }
 
   .hero-scroll {
     margin-top: 4rem;
@@ -162,6 +232,8 @@
     font-size: 12px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
+    opacity: 0;
+    animation: heroFadeIn 0.6s ease-out 0.8s forwards;
   }
 
   .scroll-line {
@@ -204,7 +276,10 @@
     align-items: start;
   }
 
-  .about-photo { position: relative; }
+  .about-photo { 
+    position: relative;
+    overflow: hidden;
+  }
 
   .about-photo img {
     width: 100%;
@@ -215,6 +290,11 @@
     display: block;
     position: relative;
     z-index: 1;
+    transition: transform 0.4s ease;
+  }
+
+  .about-photo:hover img {
+    transform: scale(1.02);
   }
 
   .photo-frame {
@@ -226,6 +306,11 @@
     border: 0.5px solid var(--burgundy-light);
     z-index: 0;
     pointer-events: none;
+    transition: transform 0.4s ease;
+  }
+
+  .about-photo:hover .photo-frame {
+    transform: translate(4px, 4px);
   }
 
   .about-text p {
@@ -249,6 +334,12 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    transition: color 0.25s ease, transform 0.25s ease;
+  }
+
+  .skill-item:hover {
+    color: var(--burgundy);
+    transform: translateX(4px);
   }
 
   .skill-item::before {
@@ -258,6 +349,11 @@
     background: var(--burgundy);
     border-radius: 50%;
     flex-shrink: 0;
+    transition: transform 0.25s ease;
+  }
+
+  .skill-item:hover::before {
+    transform: scale(1.3);
   }
 
   /* EXPERIENCE */
@@ -267,9 +363,18 @@
     gap: 2rem;
     padding: 2rem 0;
     border-top: 0.5px solid var(--border);
+    transition: background 0.3s ease;
   }
 
   .exp-item:last-child { border-bottom: 0.5px solid var(--border); }
+
+  .exp-item:hover {
+    background: rgba(237, 232, 223, 0.5);
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 
   .exp-date {
     font-size: 12px;
@@ -317,6 +422,12 @@
     color: var(--text-muted);
     border-radius: 2px;
     letter-spacing: 0.04em;
+    transition: all 0.25s ease;
+  }
+
+  .tag:hover {
+    border-color: var(--burgundy-light);
+    color: var(--burgundy);
   }
 
   /* PROJECTS */
@@ -333,10 +444,15 @@
     border: 0.5px solid var(--border);
     padding: 2rem 2.25rem;
     margin-bottom: 1.25rem;
-    transition: border-color 0.2s;
+    transition: all 0.35s ease;
+    transform: translateY(0);
   }
 
-  .project-card:hover { border-color: var(--burgundy-light); }
+  .project-card:hover { 
+    border-color: var(--burgundy-light);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(28, 35, 64, 0.06);
+  }
 
   .project-header {
     display: flex;
@@ -350,6 +466,11 @@
     font-size: 1.35rem;
     font-weight: 400;
     color: var(--navy);
+    transition: color 0.25s ease;
+  }
+
+  .project-card:hover .project-name {
+    color: var(--burgundy);
   }
 
   .project-link {
@@ -360,13 +481,16 @@
     text-decoration: none;
     border-bottom: 0.5px solid var(--burgundy-light);
     padding-bottom: 1px;
-    transition: opacity 0.2s;
+    transition: all 0.25s ease;
     white-space: nowrap;
     margin-left: 1rem;
     margin-top: 4px;
   }
 
-  .project-link:hover { opacity: 0.7; }
+  .project-link:hover { 
+    border-bottom-color: var(--burgundy);
+    transform: translateX(2px);
+  }
 
   .project-desc {
     font-size: 0.88rem;
@@ -389,11 +513,17 @@
     border: 0.5px solid var(--border);
     text-decoration: none;
     color: var(--navy);
-    transition: border-color 0.2s, color 0.2s;
+    transition: all 0.3s ease;
     display: block;
+    transform: translateY(0);
   }
 
-  .contact-item:hover { border-color: var(--burgundy); color: var(--burgundy); }
+  .contact-item:hover { 
+    border-color: var(--burgundy); 
+    color: var(--burgundy);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(125, 46, 58, 0.08);
+  }
 
   .contact-label {
     font-size: 10px;
@@ -402,6 +532,11 @@
     color: var(--text-muted);
     margin-bottom: 0.25rem;
     font-weight: 400;
+    transition: color 0.25s ease;
+  }
+
+  .contact-item:hover .contact-label {
+    color: var(--burgundy-light);
   }
 
   .contact-value { font-size: 0.9rem; font-weight: 400; }
@@ -417,17 +552,19 @@
 
   @media (max-width: 680px) {
     nav { padding: 1rem 1.5rem; }
+    nav.scrolled { padding: 0.85rem 1.5rem; }
     .nav-links { display: none; }
     section { padding: 4rem 1.5rem; }
     #about, #projects { padding: 4rem 1.5rem; }
     .about-inner { grid-template-columns: 1fr; gap: 2.5rem; }
     .exp-item { grid-template-columns: 1fr; gap: 0.5rem; }
+    .exp-item:hover { margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
     .contact-grid { grid-template-columns: 1fr; }
     .hero-name { font-size: 3rem; }
   }
 </style>
 </head>
-<body>
+<body class="loading">
 
 <nav>
   <div class="nav-logo">Benson Lin</div>
@@ -453,7 +590,7 @@
   </div>
 </section>
 
-<section id="about" style="padding-left:3rem;padding-right:3rem;">
+<section id="about" class="fade-section" style="padding-left:3rem;padding-right:3rem;">
   <div class="about-inner">
     <div class="about-photo">
       <div class="photo-frame"></div>
@@ -480,7 +617,7 @@
   </div>
 </section>
 
-<section id="experience">
+<section id="experience" class="fade-section">
   <p class="section-label">Experience</p>
   <h2 class="section-heading">Where I've worked</h2>
 
@@ -516,7 +653,7 @@
   </div>
 </section>
 
-<section id="projects" style="padding-left:3rem;padding-right:3rem;">
+<section id="projects" class="fade-section" style="padding-left:3rem;padding-right:3rem;">
   <div class="projects-inner">
     <p class="section-label">Projects</p>
     <h2 class="section-heading">Selected work</h2>
@@ -568,7 +705,7 @@
   </div>
 </section>
 
-<section id="contact">
+<section id="contact" class="fade-section">
   <p class="section-label">Contact</p>
   <h2 class="section-heading">Let's connect</h2>
   <p style="color:var(--text-muted);font-weight:300;max-width:480px;margin-bottom:2rem;font-size:0.95rem;">I'm actively seeking Junior SWE, Full Stack Engineer, and SWE Intern roles for Summer 2026. Feel free to reach out.</p>
@@ -595,6 +732,63 @@
 <footer>
   <p>© 2026 Benson Lin — Built with care</p>
 </footer>
+
+<script>
+  // Page load animation
+  window.addEventListener('load', () => {
+    document.body.classList.remove('loading');
+  });
+
+  // Nav scroll effect
+  const nav = document.querySelector('nav');
+  let lastScroll = 0;
+  
+  window.addEventListener('scroll', () => {
+    const currentScroll = window.pageYOffset;
+    
+    if (currentScroll > 50) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+    
+    lastScroll = currentScroll;
+  });
+
+  // Intersection Observer for fade-in sections
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px 0px -80px 0px',
+    threshold: 0.1
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.fade-section').forEach(section => {
+    observer.observe(section);
+  });
+
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+</script>
 
 </body>
 </html>
