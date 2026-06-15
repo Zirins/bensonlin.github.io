@@ -500,6 +500,34 @@
     margin-bottom: 1rem;
   }
 
+  .project-card div:has(.stat-pill) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 1.25rem;
+    margin-top: 0.85rem;
+  }
+
+  .stat-pill {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 400;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3rem;
+  }
+
+  .stat-pill strong {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.35em;
+    font-weight: 500;
+    color: var(--navy);
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
   /* CONTACT */
   .contact-grid {
     display: grid;
@@ -657,6 +685,29 @@
   <div class="projects-inner">
     <p class="section-label">Projects</p>
     <h2 class="section-heading">Selected work</h2>
+
+    <div class="project-card">
+      <div class="project-header">
+        <p class="project-name">Vigil</p>
+        <a href="https://getvigilapp.vercel.app" target="_blank" class="project-link">Live ↗</a>
+      </div>
+      <p class="project-desc">Real-time observability platform — services stream events into an async FastAPI + Postgres pipeline, a statistical anomaly detection engine flags incidents, and Claude generates structured root-cause analysis and remediation steps in the background without blocking ingestion. Dashboard updates live over WebSockets.</p>
+      <div class="exp-tags">
+        <span class="tag">FastAPI</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">WebSockets</span>
+        <span class="tag">Claude API</span>
+        <span class="tag">Next.js</span>
+        <span class="tag">Docker</span>
+      </div>
+      <!-- TODO: embed dashboard demo GIF/video here -->
+      <div>
+        <span class="stat-pill"><strong>100%</strong> precision</span>
+        <span class="stat-pill"><strong>99</strong> events/sec</span>
+        <span class="stat-pill"><strong>5.8s</strong> MTTD</span>
+        <span class="stat-pill"><strong>0%</strong> false positives</span>
+      </div>
+    </div>
 
     <div class="project-card">
       <div class="project-header">
