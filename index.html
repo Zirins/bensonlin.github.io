@@ -500,6 +500,26 @@
     margin-bottom: 1rem;
   }
 
+  .project-preview {
+    width: 100%;
+    margin: 1rem 0;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .project-preview img {
+    width: 100%;
+    display: block;
+    max-height: 400px;
+    object-fit: cover;
+    object-position: top;
+    transition: transform 0.4s ease;
+  }
+
+  .project-card:hover .project-preview img {
+    transform: scale(1.02);
+  }
+
   .project-card div:has(.stat-pill) {
     display: flex;
     flex-wrap: wrap;
@@ -692,6 +712,9 @@
         <a href="https://getvigilapp.vercel.app" target="_blank" class="project-link">Live ↗</a>
       </div>
       <p class="project-desc">Real-time observability platform — services stream events into an async FastAPI + Postgres pipeline, a statistical anomaly detection engine flags incidents, and Claude generates structured root-cause analysis and remediation steps in the background without blocking ingestion. Dashboard updates live over WebSockets.</p>
+      <div class="project-preview">
+        <img src="vigil.png.png" alt="Vigil project screenshot">
+      </div>
       <div class="exp-tags">
         <span class="tag">FastAPI</span>
         <span class="tag">PostgreSQL</span>
@@ -711,10 +734,37 @@
 
     <div class="project-card">
       <div class="project-header">
+        <p class="project-name">Riftbound Sigils</p>
+        <a href="https://zirins.github.io/riftbound/" target="_blank" class="project-link">Play ↗</a>
+      </div>
+      <p class="project-desc">A xianxia-themed mobile gacha RPG built solo using Phaser 3, TypeScript, and Capacitor. Designed and implemented 30+ sequential feature phases — hero gacha system with pity mechanics, auto-battle combat engine, awakening progression, arena seasons, guild system, and offline rewards — directed entirely through AI-assisted development. No backend; full game state in localStorage with versioned save migration.</p>
+      <div style="width:100%;margin:1rem 0;border-radius:6px;overflow:hidden;">
+        <iframe
+          src="https://zirins.github.io/riftbound/"
+          width="100%"
+          height="390"
+          style="border:none;display:block;pointer-events:auto;"
+          scrolling="no"
+        ></iframe>
+      </div>
+      <div class="exp-tags">
+        <span class="tag">Phaser 3</span>
+        <span class="tag">TypeScript</span>
+        <span class="tag">Capacitor</span>
+        <span class="tag">Systems Design</span>
+        <span class="tag">AI-Directed Dev</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-header">
         <p class="project-name">Orbit</p>
         <a href="https://orbit-wpi.vercel.app" target="_blank" class="project-link">Live ↗</a>
       </div>
       <p class="project-desc">Professor intelligence platform for WPI students. Built an ETL pipeline scraping 589 faculty records and 8,000+ RateMyProfessors reviews, then extracted structured teaching signals (grading harshness, workload intensity, exam difficulty) via an NLP pipeline. Full-stack: FastAPI + PostgreSQL backend, Next.js 14 frontend. Actively used by WPI students.</p>
+      <div class="project-preview">
+        <img src="orbit.png.png" alt="Orbit project screenshot">
+      </div>
       <div class="exp-tags">
         <span class="tag">Next.js</span>
         <span class="tag">FastAPI</span>
@@ -730,6 +780,9 @@
         <a href="https://huddle.stoiber.network/" target="_blank" class="project-link">Live ↗</a>
       </div>
       <p class="project-desc">A full-stack commuter chat platform built in Next.js and TypeScript with real-time messaging — threading, reactions, replies — integrated with live MBTA train and stop APIs. Engineered concurrent message delivery and validated the platform in production during a professor's live MBTA commute. Deployed with Docker and Vercel.</p>
+      <div class="project-preview">
+        <img src="huddle_chat_png.png" alt="Huddle Chat project screenshot">
+      </div>
       <div class="exp-tags">
         <span class="tag">Next.js</span>
         <span class="tag">TypeScript</span>
