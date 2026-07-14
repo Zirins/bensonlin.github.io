@@ -321,18 +321,24 @@
     }
 
     /* Featured work */
-    .featured-list { margin-top: clamp(3rem, 5vw, 4.5rem); }
+    .featured-list {
+      margin-top: clamp(1rem, 1.5vw, 1.25rem);
+      border-top: 1px solid var(--border);
+    }
 
     .featured-project {
       display: grid;
       grid-template-columns: minmax(0, 1.22fr) minmax(300px, 0.78fr);
-      gap: clamp(2.5rem, 6vw, 5.5rem);
-      align-items: center;
+      gap: clamp(2rem, 4vw, 4rem);
+      align-items: start;
       padding-block: clamp(2.75rem, 5vw, 4.5rem);
       border-top: 1px solid var(--border);
     }
 
-    .featured-project:first-child { padding-top: 0; border-top: 0; }
+    .featured-project:first-child {
+      padding-top: clamp(1rem, 1.5vw, 1.25rem);
+      border-top: 0;
+    }
     .featured-project:nth-child(even) {
       grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.22fr);
     }
@@ -342,18 +348,14 @@
       overflow: hidden;
       border: 1px solid var(--border);
       background: #e5e0d8;
-      aspect-ratio: 16 / 10;
+      aspect-ratio: 16 / 9;
     }
-
-    .project-media--dropforge { aspect-ratio: 4 / 3; }
-    .project-media--orbit { aspect-ratio: 6 / 5; }
-    .project-media--vigil { aspect-ratio: 7 / 6; }
 
     .project-media img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      object-position: top;
+      object-fit: contain;
+      object-position: center;
       transition: transform 280ms ease;
     }
 
@@ -472,7 +474,7 @@
 
     .secondary-project {
       display: grid;
-      grid-template-columns: 80px minmax(0, 1fr) auto;
+      grid-template-columns: 80px minmax(0, 1fr);
       gap: clamp(1.25rem, 4vw, 3rem);
       align-items: start;
       padding-block: 2rem;
@@ -483,7 +485,12 @@
     .secondary-title { font-family: var(--serif); font-size: 1.7rem; font-weight: 400; line-height: 1.2; }
     .secondary-category { margin-top: 0.2rem; color: var(--burgundy); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
     .secondary-summary { max-width: 650px; margin-top: 0.65rem; color: var(--text-muted); font-size: 0.87rem; font-weight: 300; }
-    .secondary-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; }
+    .secondary-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
 
     /* About */
     .about-grid {
@@ -561,6 +568,7 @@
 
     .contact-grid > :nth-child(even) { border-right: 0; }
     .contact-item:hover { background: var(--cream-dark); color: var(--burgundy); }
+    .contact-item[href="/resume.pdf"] { grid-column: 1 / -1; border-right: 0; }
     .contact-label { margin-bottom: 0.3rem; }
     .contact-value { overflow-wrap: anywhere; font-size: 0.86rem; }
     .contact-placeholder { color: var(--text-muted); }
@@ -578,7 +586,6 @@
       .featured-project:nth-child(even) .project-media { order: 0; }
       .contact-layout { grid-template-columns: 1fr; }
       .secondary-project { grid-template-columns: 55px 1fr; }
-      .secondary-actions { grid-column: 2; justify-content: flex-start; }
     }
 
     @media (max-width: 720px) {
@@ -613,14 +620,11 @@
 
     @media (max-width: 520px) {
       .hero-actions .button { width: 100%; }
-      .project-media--orbit,
-      .project-media--vigil { aspect-ratio: 4 / 3; }
       .project-meta { display: grid; gap: 0.25rem; }
       .proof-row { display: grid; grid-template-columns: 1fr 1fr; }
       .proof-item + .proof-item { border-left: 0; }
       .proof-item:nth-child(even) { padding-left: 0.9rem; border-left: 1px solid var(--border); }
       .secondary-project { grid-template-columns: 1fr; gap: 0.65rem; }
-      .secondary-actions { grid-column: 1; }
       .skills-list { grid-template-columns: 1fr; }
       .contact-grid { grid-template-columns: 1fr; }
       .contact-grid > * { border-right: 0; }
@@ -647,7 +651,7 @@
         <li><a href="#work">Work</a></li>
         <li><a href="#experience">Experience</a></li>
         <li><a href="#about">About</a></li>
-        <li><a href="#resume">Résumé</a></li>
+        <li><a href="/resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View résumé PDF in a new tab">Résumé</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </div>
@@ -661,7 +665,7 @@
         <p class="hero-positioning">Software engineer building reliable full-stack products with Java, Spring Boot, Python, PostgreSQL, and Next.js. WPI B.S./M.S. Computer Science graduate based in Boston.</p>
         <div class="hero-actions">
           <a class="button button-primary" href="#work">View Featured Work</a>
-          <a class="button button-secondary" href="#resume">Download Résumé <span aria-hidden="true">*</span></a>
+          <a class="button button-secondary" href="/resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View résumé PDF in a new tab">View Résumé</a>
         </div>
         <div class="hero-links" aria-label="Professional profiles">
           <a class="text-link" href="https://github.com/Zirins" target="_blank" rel="noopener noreferrer" aria-label="Benson Lin on GitHub (opens in a new tab)">GitHub ↗</a>
@@ -680,7 +684,7 @@
         <div class="featured-list">
           <article class="featured-project">
             <figure class="project-media project-media--dropforge">
-              <img src="dropforge_png.png" width="1920" height="3223" alt="DropForge catalog showing limited-release products with live, upcoming, sold-out, and ended inventory states" fetchpriority="high" decoding="async">
+              <img src="dropforge.png" width="1920" height="3223" alt="DropForge catalog showing limited-release products with live, upcoming, sold-out, and ended inventory states" fetchpriority="high" decoding="async">
             </figure>
             <div class="project-content">
               <div class="project-meta"><span class="project-index">01</span><span class="project-category">Limited-inventory commerce platform</span></div>
@@ -700,9 +704,7 @@
               <ul class="stack-list" aria-label="DropForge technology stack"><li>Java</li><li>Spring Boot</li><li>PostgreSQL</li><li>Next.js</li><li>Docker</li><li>Railway</li><li>Vercel</li></ul>
               <div class="project-actions">
                 <a class="button button-primary" href="https://dropforge-roan.vercel.app" target="_blank" rel="noopener noreferrer" aria-label="Open the DropForge live demo in a new tab">Live Demo ↗</a>
-                <span class="button-disabled" aria-disabled="true">GitHub link unavailable</span>
               </div>
-              <p class="project-note">The provided repository URL currently returns 404.</p>
             </div>
           </article>
 
@@ -723,7 +725,6 @@
               <ul class="stack-list" aria-label="Orbit technology stack"><li>Next.js</li><li>FastAPI</li><li>PostgreSQL</li><li>Python</li></ul>
               <div class="project-actions">
                 <a class="button button-primary" href="https://orbit-wpi.vercel.app" target="_blank" rel="noopener noreferrer" aria-label="Open the Orbit live demo in a new tab">Live Demo ↗</a>
-                <span class="button-disabled" aria-disabled="true">Repository link needed</span>
               </div>
             </div>
           </article>
@@ -745,7 +746,6 @@
               <ul class="stack-list" aria-label="Vigil technology stack"><li>FastAPI</li><li>PostgreSQL</li><li>Python</li><li>Next.js</li><li>WebSockets</li><li>Docker</li></ul>
               <div class="project-actions">
                 <a class="button button-primary" href="https://getvigilapp.vercel.app" target="_blank" rel="noopener noreferrer" aria-label="Open the Vigil live demo in a new tab">Live Demo ↗</a>
-                <span class="button-disabled" aria-disabled="true">Repository link needed</span>
               </div>
             </div>
           </article>
@@ -801,10 +801,10 @@
               <p class="secondary-category">Mobile game systems</p>
               <p class="secondary-summary">A mobile xianxia roguelite built with Phaser and TypeScript, featuring configurable gacha probabilities, pity mechanics, progression systems, auto-battle, versioned saves, and offline rewards.</p>
               <ul class="stack-list" aria-label="Riftbound Sigils technologies"><li>Phaser 3</li><li>TypeScript</li><li>Game Architecture</li><li>State Persistence</li></ul>
-            </div>
-            <div class="secondary-actions">
-              <a class="button button-small button-primary" href="https://zirins.github.io/riftbound/" target="_blank" rel="noopener noreferrer" aria-label="Play Riftbound Sigils in a new tab">Play ↗</a>
-              <a class="button button-small button-secondary" href="https://github.com/Zirins/riftbound" target="_blank" rel="noopener noreferrer" aria-label="View Riftbound Sigils on GitHub in a new tab">GitHub ↗</a>
+              <div class="secondary-actions">
+                <a class="button button-small button-primary" href="https://zirins.github.io/riftbound/" target="_blank" rel="noopener noreferrer" aria-label="Play Riftbound Sigils in a new tab">Play ↗</a>
+                <a class="button button-small button-secondary" href="https://github.com/Zirins/riftbound" target="_blank" rel="noopener noreferrer" aria-label="View Riftbound Sigils on GitHub in a new tab">GitHub ↗</a>
+              </div>
             </div>
           </article>
 
@@ -815,10 +815,10 @@
               <p class="secondary-category">Real-time commuter chat</p>
               <p class="secondary-summary">A commuter chat product with real-time messages, threads, reactions, replies, and live MBTA train and stop data, validated during a live transit commute.</p>
               <ul class="stack-list" aria-label="Huddle Chat technologies"><li>Next.js</li><li>TypeScript</li><li>MBTA API</li><li>Docker</li></ul>
-            </div>
-            <div class="secondary-actions">
-              <a class="button button-small button-primary" href="https://huddle.stoiber.network/" target="_blank" rel="noopener noreferrer" aria-label="Open the Huddle Chat live site in a new tab">Live ↗</a>
-              <a class="button button-small button-secondary" href="https://github.com/Zirins/huddle-chat" target="_blank" rel="noopener noreferrer" aria-label="View Huddle Chat on GitHub in a new tab">GitHub ↗</a>
+              <div class="secondary-actions">
+                <a class="button button-small button-primary" href="https://huddle.stoiber.network/" target="_blank" rel="noopener noreferrer" aria-label="Open the Huddle Chat live site in a new tab">Live ↗</a>
+                <a class="button button-small button-secondary" href="https://github.com/Zirins/huddle-chat" target="_blank" rel="noopener noreferrer" aria-label="View Huddle Chat on GitHub in a new tab">GitHub ↗</a>
+              </div>
             </div>
           </article>
 
@@ -830,7 +830,6 @@
               <p class="secondary-summary">A hospital wayfinding system using A* and Dijkstra routing with SVG multi-floor visualization, built by an Agile student team with CI and Docker-based delivery.</p>
               <ul class="stack-list" aria-label="Hospital routing technologies"><li>React</li><li>TypeScript</li><li>A* / Dijkstra</li><li>Docker</li></ul>
             </div>
-            <div class="secondary-actions"><span class="button-disabled button-small" aria-disabled="true">Project link needed</span></div>
           </article>
         </div>
       </div>
@@ -863,7 +862,8 @@
           <a class="contact-item" href="https://www.linkedin.com/in/benson-lin-bl" target="_blank" rel="noopener noreferrer" aria-label="Benson Lin on LinkedIn (opens in a new tab)"><span class="contact-label">LinkedIn</span><span class="contact-value">benson-lin-bl ↗</span></a>
           <a class="contact-item" href="https://github.com/Zirins" target="_blank" rel="noopener noreferrer" aria-label="Benson Lin on GitHub (opens in a new tab)"><span class="contact-label">GitHub</span><span class="contact-value">github.com/Zirins ↗</span></a>
           <a class="contact-item" href="tel:+18188521807"><span class="contact-label">Phone</span><span class="contact-value">+1 (818) 852-1807</span></a>
-          <div class="contact-placeholder" id="resume"><span class="contact-label">Résumé</span><span class="contact-value">PDF needed — download will be enabled when the file is provided.</span></div>
+          <!-- To update the résumé, replace /resume.pdf without changing links. -->
+          <a class="contact-item" href="/resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View résumé PDF in a new tab"><span class="contact-label">Résumé</span><span class="contact-value">View Résumé ↗</span></a>
         </div>
       </div>
     </section>
