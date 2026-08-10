@@ -678,8 +678,8 @@
     <section class="section-shell section-tint fade-section" id="work" aria-labelledby="work-title">
       <div class="container">
         <p class="section-label">Featured Work</p>
-        <h2 class="section-heading" id="work-title">Engineering products from data layer to interface</h2>
-        <p class="section-intro">Three projects covering backend architecture, data pipelines, and full-stack product work — picked to show range, not just repetition.</p>
+        <h2 class="section-heading" id="work-title">Backend systems, data work, and the products built on top of them.</h2>
+        <p class="section-intro">Three projects covering backend architecture, data pipelines, and full-stack product work.</p>
 
         <div class="featured-list">
           <article class="featured-project">
@@ -689,12 +689,10 @@
             <div class="project-content">
               <div class="project-meta"><span class="project-index">01</span><span class="project-category">Limited-inventory commerce platform</span></div>
               <h3 class="project-title">DropForge</h3>
-              <p class="project-summary">A limited-inventory marketplace with temporary reservations, simulated checkout, expiration handling, cancellation, order creation, and automatic inventory restoration.</p>
-              <div class="engineering-focus"><span class="focus-label">Engineering Focus</span><span class="focus-value">Transactional inventory consistency</span></div>
+              <p class="project-summary">A limited-inventory marketplace where items get reserved, checked out, or released back to stock.</p>
               <ul class="highlight-list">
-                <li>Built reservation and checkout workflows with Java, Spring Boot, Spring Data JPA, and PostgreSQL.</li>
-                <li>A limited-inventory marketplace handling reservation holds, expiration, cancellation, and checkout — the core challenge is keeping inventory state consistent as items move between those flows.</li>
-                <li>Deployed the Spring Boot API and PostgreSQL on Railway and the Next.js frontend on Vercel.</li>
+                <li>Built with Java, Spring Boot, Spring Data JPA, and PostgreSQL — deployed on Railway, with the Next.js frontend on Vercel.</li>
+                <li>Most of the work is the hold timer: reserve something, let it expire or cancel, put stock back, and don't accidentally let two checkouts grab the same unit while that's happening.</li>
               </ul>
               <div class="proof-row" aria-label="DropForge verified proof points">
                 <div class="proof-item"><strong>81</strong> backend tests</div>
@@ -716,7 +714,6 @@
               <div class="project-meta"><span class="project-index">02</span><span class="project-category">Professor intelligence platform</span></div>
               <h3 class="project-title">Orbit</h3>
               <p class="project-summary">A professor discovery and comparison tool for WPI students using scraped faculty and RateMyProfessors data, structured teaching signals, search, filtering, professor detail pages, and schedule-planning context.</p>
-              <div class="engineering-focus"><span class="focus-label">Engineering Focus</span><span class="focus-value">ETL and review-signal extraction</span></div>
               <ul class="highlight-list">
                 <li>Built a data pipeline for faculty and review ingestion.</li>
                 <li>Extracted workload, grading, difficulty, and teaching signals from review text.</li>
@@ -736,11 +733,9 @@
             <div class="project-content">
               <div class="project-meta"><span class="project-index">03</span><span class="project-category">Observability and incident triage platform</span></div>
               <h3 class="project-title">Vigil</h3>
-              <p class="project-summary">A full-stack observability platform that ingests service events, detects anomalies, creates incidents, and generates structured root-cause and remediation guidance.</p>
-              <div class="engineering-focus"><span class="focus-label">Engineering Focus</span><span class="focus-value">Event ingestion and incident detection</span></div>
+              <p class="project-summary">Service events come in, three detectors (z-score, error-rate burst, rage pattern) decide if something looks off, and Vigil opens an incident with a severity instead of leaving you staring at a raw event stream.</p>
               <ul class="highlight-list">
                 <li>Built asynchronous event ingestion with FastAPI and PostgreSQL.</li>
-                <li>Added anomaly detection and structured incident classification.</li>
                 <li>Streamed dashboard updates over WebSockets.</li>
               </ul>
               <ul class="stack-list" aria-label="Vigil technology stack"><li>FastAPI</li><li>PostgreSQL</li><li>Python</li><li>Next.js</li><li>WebSockets</li><li>Docker</li></ul>
@@ -756,7 +751,7 @@
     <section class="section-shell fade-section" id="experience" aria-labelledby="experience-title">
       <div class="container">
         <p class="section-label">Experience</p>
-        <h2 class="section-heading" id="experience-title">Applied engineering and research</h2>
+        <h2 class="section-heading" id="experience-title">Where I've worked</h2>
         <div class="experience-list">
           <article class="experience-item">
             <p class="experience-date">Aug 2025 — Mar 2026</p>
@@ -840,9 +835,8 @@
           <img src="headshot.jpg" width="977" height="1356" alt="Portrait of Benson Lin" loading="lazy" decoding="async">
         </figure>
         <div class="about-copy">
-          <p class="section-label">About</p>
-          <h2 class="section-heading" id="about-title">I like figuring out how a system should actually work, then building it — backend logic, data pipelines, or the UI on top.</h2>
-          <p>I’m a WPI B.S./M.S. Computer Science graduate. I like working across backend architecture, data-intensive products, and the interfaces that make complex systems understandable.</p>
+          <p class="section-label" id="about-title">About</p>
+          <p>I’m a WPI B.S./M.S. Computer Science graduate. I'm most interested in software where the hard part isn't just writing the endpoint, but deciding how the system should behave when things fail, overlap, or get messy. Most of my recent work has been backend-heavy, although I usually build the frontend too because I like seeing the whole product come together.</p>
           <p>Open to software engineering roles across the U.S. and remote.</p>
           <ul class="skills-list" aria-label="Primary engineering skills"><li>Java</li><li>Spring Boot</li><li>Python</li><li>FastAPI</li><li>TypeScript</li><li>React / Next.js</li><li>PostgreSQL</li><li>Docker</li><li>AWS</li></ul>
         </div>
