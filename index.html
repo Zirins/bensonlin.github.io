@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#f7f4ef">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Benson Lin — Software Engineer">
-  <meta property="og:description" content="Full-stack engineering work across commerce, data products, observability, and real-time systems.">
+  <meta property="og:description" content="Full-stack engineering work across transactional commerce, campus community platforms, and observability.">
   <!-- TODO: Add <meta property="og:image"> after an approved social preview is provided. -->
   <!-- TODO: Add <link rel="canonical"> after the production portfolio URL is confirmed. -->
   <!-- TODO: Add a favicon when an approved icon asset is available. -->
@@ -678,8 +678,8 @@
     <section class="section-shell section-tint fade-section" id="work" aria-labelledby="work-title">
       <div class="container">
         <p class="section-label">Featured Work</p>
-        <h2 class="section-heading" id="work-title">Backend systems, data work, and the products built on top of them.</h2>
-        <p class="section-intro">Three projects covering backend architecture, data pipelines, and full-stack product work.</p>
+        <h2 class="section-heading" id="work-title">Backend systems, concurrency controls, and the products built on top of them.</h2>
+        <p class="section-intro">Three projects covering transactional inventory flows, anti-abuse community platforms, and telemetry and incident systems.</p>
 
         <div class="featured-list">
           <article class="featured-project">
@@ -689,17 +689,17 @@
             <div class="project-content">
               <div class="project-meta"><span class="project-index">01</span><span class="project-category">Limited-inventory commerce platform</span></div>
               <h3 class="project-title">DropForge</h3>
-              <p class="project-summary">A limited-inventory marketplace where items get reserved, checked out, or released back to stock.</p>
+              <p class="project-summary">A backend for limited-quantity product drops. When many people try to reserve the last few units at the same moment, the stock can't go below zero, and a retried request can't create a second reservation. I built the reservation and checkout flow in Spring Boot on PostgreSQL and tested it against a real database instead of mocks.</p>
               <ul class="highlight-list">
-                <li>Built with Java, Spring Boot, Spring Data JPA, and PostgreSQL — deployed on Railway, with the Next.js frontend on Vercel.</li>
-                <li>Most of the work is the hold timer: reserve something, let it expire or cancel, put stock back, and don't accidentally let two checkouts grab the same unit while that's happening.</li>
+                <li>Built a limited-drop reservation and checkout backend (Spring Boot, PostgreSQL, Flyway) with idempotent reservation creation and an atomic conditional inventory update that prevents overselling under concurrent requests; pessimistic row locks serialize checkout and cancellation.</li>
+                <li>Wrote 80 automated tests (22 unit, 58 integration) with JUnit 5 and Testcontainers against real PostgreSQL, run in GitHub Actions CI, including failure-injection tests that confirm a mid-transaction error rolls back the inventory change.</li>
               </ul>
               <div class="proof-row" aria-label="DropForge verified proof points">
-                <div class="proof-item"><strong>81</strong> backend tests</div>
-                <div class="proof-item"><strong>49</strong> frontend tests</div>
-                <div class="proof-item"><strong>Live</strong> production deployment</div>
+                <div class="proof-item"><strong>80</strong> backend tests</div>
+                <div class="proof-item"><strong>22 / 58</strong> unit &amp; integration</div>
+                <div class="proof-item"><strong>Live</strong> demo</div>
               </div>
-              <ul class="stack-list" aria-label="DropForge technology stack"><li>Java</li><li>Spring Boot</li><li>PostgreSQL</li><li>Next.js</li><li>Docker</li><li>Railway</li><li>Vercel</li></ul>
+              <ul class="stack-list" aria-label="DropForge technology stack"><li>Java</li><li>Spring Boot</li><li>PostgreSQL</li><li>Next.js</li><li>Docker</li><li>Flyway</li><li>Testcontainers</li><li>GitHub Actions</li></ul>
               <div class="project-actions">
                 <a class="button button-primary" href="https://dropforge-roan.vercel.app" target="_blank" rel="noopener noreferrer" aria-label="Open the DropForge live demo in a new tab">Live Demo ↗</a>
               </div>
@@ -707,21 +707,25 @@
           </article>
 
           <article class="featured-project">
-            <figure class="project-media project-media--orbit">
-              <img src="orbit.png" width="2561" height="2178" alt="Orbit professor catalog with search, department filtering, teaching signals, ratings, and review counts" loading="lazy" decoding="async">
+            <figure class="project-media project-media--herd">
+              <img src="herd.png" width="3840" height="2160" alt="Herd WPI student discussion wall with algorithmically ranked comments, helpful votes, and course commentary" loading="lazy" decoding="async">
             </figure>
             <div class="project-content">
-              <div class="project-meta"><span class="project-index">02</span><span class="project-category">Professor intelligence platform</span></div>
-              <h3 class="project-title">Orbit</h3>
-              <p class="project-summary">A professor discovery and comparison tool for WPI students using scraped faculty and RateMyProfessors data, structured teaching signals, search, filtering, professor detail pages, and schedule-planning context.</p>
+              <div class="project-meta"><span class="project-index">02</span><span class="project-category">Campus community platform</span></div>
+              <h3 class="project-title">Herd</h3>
+              <p class="project-summary">A site where WPI students leave anonymous comments about courses and professors. Because anyone can post without an account, most of the work went into the backend: rate limits per session and per IP, Turnstile on submissions, and a feed that ranks recent comments with helpful votes higher.</p>
               <ul class="highlight-list">
-                <li>Built a data pipeline for faculty and review ingestion.</li>
-                <li>Extracted workload, grading, difficulty, and teaching signals from review text.</li>
-                <li>Delivered a searchable Next.js product with professor comparison and detailed review analysis.</li>
+                <li>Engineered a ranked feed using exponential time-decay scoring weighted by helpful votes.</li>
+                <li>Enforced multi-tier rate limiting across sessions and salted IP hashes alongside Cloudflare Turnstile verification to stop automated spam.</li>
+                <li>Prevented a race on auto-hide moderation using row-level locking (<code>with_for_update</code>) in PostgreSQL, covered by a lock-contention test.</li>
               </ul>
-              <ul class="stack-list" aria-label="Orbit technology stack"><li>Next.js</li><li>FastAPI</li><li>PostgreSQL</li><li>Python</li></ul>
+              <div class="proof-row" aria-label="Herd verified proof points">
+                <div class="proof-item"><strong>320</strong> pytest tests</div>
+                <div class="proof-item"><strong>Live</strong> demo</div>
+              </div>
+              <ul class="stack-list" aria-label="Herd technology stack"><li>FastAPI</li><li>PostgreSQL</li><li>Next.js</li><li>TypeScript</li><li>Railway</li><li>Vercel</li></ul>
               <div class="project-actions">
-                <a class="button button-primary" href="https://orbit-wpi.vercel.app" target="_blank" rel="noopener noreferrer" aria-label="Open the Orbit live demo in a new tab">Live Demo ↗</a>
+                <a class="button button-primary" href="https://herd-wpi.vercel.app" target="_blank" rel="noopener noreferrer" aria-label="Open the Herd live demo in a new tab">Live Demo ↗</a>
               </div>
             </div>
           </article>
@@ -731,12 +735,12 @@
               <img src="vigil.png" width="2880" height="1800" alt="Vigil service health dashboard showing service status, open incidents, severity, and recent anomaly detections" loading="lazy" decoding="async">
             </figure>
             <div class="project-content">
-              <div class="project-meta"><span class="project-index">03</span><span class="project-category">Observability and incident triage platform</span></div>
+              <div class="project-meta"><span class="project-index">03</span><span class="project-category">Service health dashboard</span></div>
               <h3 class="project-title">Vigil</h3>
-              <p class="project-summary">Service events come in, three detectors (z-score, error-rate burst, rage pattern) decide if something looks off, and Vigil opens an incident with a severity instead of leaving you staring at a raw event stream.</p>
+              <p class="project-summary">A service health dashboard. It takes in telemetry events from services and opens an incident when something looks wrong. I spent the most time on two problems: a burst of events about the same issue should produce one open incident instead of several, and the dashboard should load each service's latest latency, error rate, and incident severity in a single query.</p>
               <ul class="highlight-list">
-                <li>Built asynchronous event ingestion with FastAPI and PostgreSQL.</li>
-                <li>Streamed dashboard updates over WebSockets.</li>
+                <li>Built a telemetry ingestion API (FastAPI, async SQLAlchemy, PostgreSQL) that uses a partial unique index on (service_id, detection_type) to prevent concurrent requests from creating duplicate open incidents.</li>
+                <li>Consolidated the service-health dashboard's queries into a single round-trip using a ROW_NUMBER window function for each service's latest p99 latency, error rate, and open-incident severity.</li>
               </ul>
               <ul class="stack-list" aria-label="Vigil technology stack"><li>FastAPI</li><li>PostgreSQL</li><li>Python</li><li>Next.js</li><li>WebSockets</li><li>Docker</li></ul>
               <div class="project-actions">
@@ -756,28 +760,26 @@
           <article class="experience-item">
             <p class="experience-date">Aug 2025 — Mar 2026</p>
             <div>
-              <p class="experience-org">Microsoft-Sponsored WPI Project</p>
-              <h3 class="experience-title">Software Engineer</h3>
+              <p class="experience-org">Microsoft Intune (Sponsored MQP)</p>
+              <h3 class="experience-title">Capstone Software Engineer</h3>
               <ul class="impact-list">
-                <li>Built a telemetry pipeline that captured Win32 UI events and reconstructed raw interaction signals into semantic workflow graphs.</li>
-                <li>Applied Hidden Markov Models and Viterbi decoding alongside dead-click, rage-click, and cyclical-navigation heuristics to identify workflow anomalies.</li>
-                <li>Evaluated detection quality against human-labeled data using precision, recall, and F1.</li>
+                <li>Built a Python telemetry pipeline that captures real-time Win32 UI events and converts them into semantic workflow graphs to surface user friction and UI latency.</li>
+                <li>Combined heuristic detectors with a Hidden Markov Model sequence detector (Baum-Welch training, Viterbi decoding) into a single workflow-level system, reaching 90.1% F1 (92.8% precision, 87.6% recall) on a human-labeled dataset.</li>
+                <li>Cut false positives by 65% through threshold tuning and failure analysis of dead-click inflation and application-error blind spots.</li>
               </ul>
-              <div class="tag-list" aria-label="Microsoft-sponsored project technologies"><span class="tag">Python</span><span class="tag">Win32</span><span class="tag">HMM / Viterbi</span><span class="tag">Event Processing</span><span class="tag">OCR</span></div>
+              <div class="tag-list" aria-label="Microsoft Intune project technologies"><span class="tag">Python</span><span class="tag">Win32</span><span class="tag">HMM / Viterbi</span><span class="tag">Anomaly Detection</span><span class="tag">Event Telemetry</span></div>
             </div>
           </article>
 
           <article class="experience-item">
             <p class="experience-date">Mar 2025 — Jun 2025</p>
             <div>
-              <p class="experience-org">SerenDPT — Venice, Italy</p>
-              <h3 class="experience-title">Data Analyst / Software Developer</h3>
+              <p class="experience-org">SerenDPT (Venice Project Center IQP)</p>
+              <h3 class="experience-title">Software Developer</h3>
               <ul class="impact-list">
-                <li>Cleaned and analyzed 4,000+ infrastructure data points across 126 historic city islands using Python and Node.js workflows.</li>
-                <li>Used ArcGIS geospatial analysis to model accessibility, congestion, infrastructure, and tourism-load signals.</li>
-                <li>Produced an accessibility scoring model and published the supporting open-source dataset and research.</li>
+                <li>Wrote Python and Node.js scripts to collect, clean, and validate infrastructure and rental data across 126 historic islands for a Venice Project Center study.</li>
               </ul>
-              <div class="tag-list" aria-label="SerenDPT technologies"><span class="tag">Python</span><span class="tag">Node.js</span><span class="tag">ArcGIS</span><span class="tag">Geospatial Analysis</span></div>
+              <div class="tag-list" aria-label="SerenDPT technologies"><span class="tag">Python</span><span class="tag">Node.js</span><span class="tag">Data Validation</span></div>
             </div>
           </article>
         </div>
@@ -838,7 +840,7 @@
           <p class="section-label" id="about-title">About</p>
           <p>I’m a WPI B.S./M.S. Computer Science graduate. I'm most interested in software where the hard part isn't just writing the endpoint, but deciding how the system should behave when things fail, overlap, or get messy. Most of my recent work has been backend-heavy, although I usually build the frontend too because I like seeing the whole product come together.</p>
           <p>Open to software engineering roles across the U.S. and remote.</p>
-          <ul class="skills-list" aria-label="Primary engineering skills"><li>Java</li><li>Spring Boot</li><li>Python</li><li>FastAPI</li><li>TypeScript</li><li>React / Next.js</li><li>PostgreSQL</li><li>Docker</li><li>AWS</li></ul>
+          <ul class="skills-list" aria-label="Primary engineering skills"><li>Java</li><li>Spring Boot</li><li>Python</li><li>FastAPI</li><li>TypeScript</li><li>React / Next.js</li><li>PostgreSQL</li><li>Docker</li><li>Flyway</li><li>Testcontainers</li><li>GitHub Actions</li></ul>
         </div>
       </div>
     </section>
