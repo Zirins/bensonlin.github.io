@@ -690,10 +690,6 @@
               <div class="project-meta"><span class="project-index">01</span><span class="project-category">Limited-inventory commerce platform</span></div>
               <h3 class="project-title">DropForge</h3>
               <p class="project-summary">A backend for limited-quantity product drops. When many people try to reserve the last few units at the same moment, the stock can't go below zero, and a retried request can't create a second reservation. I built the reservation and checkout flow in Spring Boot on PostgreSQL and tested it against a real database instead of mocks.</p>
-              <ul class="highlight-list">
-                <li>Built a limited-drop reservation and checkout backend (Spring Boot, PostgreSQL, Flyway) with idempotent reservation creation and an atomic conditional inventory update that prevents overselling under concurrent requests; pessimistic row locks serialize checkout and cancellation.</li>
-                <li>Wrote 80 automated tests (22 unit, 58 integration) with JUnit 5 and Testcontainers against real PostgreSQL, run in GitHub Actions CI, including failure-injection tests that confirm a mid-transaction error rolls back the inventory change.</li>
-              </ul>
               <div class="proof-row" aria-label="DropForge verified proof points">
                 <div class="proof-item"><strong>80</strong> backend tests</div>
                 <div class="proof-item"><strong>22 / 58</strong> unit &amp; integration</div>
@@ -732,10 +728,6 @@
               <div class="project-meta"><span class="project-index">03</span><span class="project-category">Service health dashboard</span></div>
               <h3 class="project-title">Vigil</h3>
               <p class="project-summary">A service health dashboard. It takes in telemetry events from services and opens an incident when something looks wrong. I spent the most time on two problems: a burst of events about the same issue should produce one open incident instead of several, and the dashboard should load each service's latest latency, error rate, and incident severity in a single query.</p>
-              <ul class="highlight-list">
-                <li>Built a telemetry ingestion API (FastAPI, async SQLAlchemy, PostgreSQL) that uses a partial unique index on (service_id, detection_type) to prevent concurrent requests from creating duplicate open incidents.</li>
-                <li>Consolidated the service-health dashboard's queries into a single round-trip using a ROW_NUMBER window function for each service's latest p99 latency, error rate, and open-incident severity.</li>
-              </ul>
               <ul class="stack-list" aria-label="Vigil technology stack"><li>FastAPI</li><li>PostgreSQL</li><li>Python</li><li>Next.js</li><li>WebSockets</li><li>Docker</li></ul>
               <div class="project-actions">
                 <a class="button button-primary" href="https://getvigilapp.vercel.app" target="_blank" rel="noopener noreferrer" aria-label="Open the Vigil live demo in a new tab">Live Demo ↗</a>
