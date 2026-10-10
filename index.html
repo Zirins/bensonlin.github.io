@@ -713,14 +713,8 @@
             <div class="project-content">
               <div class="project-meta"><span class="project-index">02</span><span class="project-category">Campus community platform</span></div>
               <h3 class="project-title">Herd</h3>
-              <p class="project-summary">A site where WPI students leave anonymous comments about courses and professors. Because anyone can post without an account, most of the work went into the backend: rate limits per session and per IP, Turnstile on submissions, and a feed that ranks recent comments with helpful votes higher.</p>
-              <ul class="highlight-list">
-                <li>Engineered a ranked feed using exponential time-decay scoring weighted by helpful votes.</li>
-                <li>Enforced multi-tier rate limiting across sessions and salted IP hashes alongside Cloudflare Turnstile verification to stop automated spam.</li>
-                <li>Prevented a race on auto-hide moderation using row-level locking (<code>with_for_update</code>) in PostgreSQL, covered by a lock-contention test.</li>
-              </ul>
+              <p class="project-summary">A site where WPI students leave anonymous comments about courses and professors. There are no accounts, so most of the work went into the backend: every comment is read before it goes up, rate limits and Turnstile slow down spam, and the feed ranks recent comments with helpful votes higher. Shared with WPI students through a Fizz post.</p>
               <div class="proof-row" aria-label="Herd verified proof points">
-                <div class="proof-item"><strong>320</strong> pytest tests</div>
                 <div class="proof-item"><strong>Live</strong> demo</div>
               </div>
               <ul class="stack-list" aria-label="Herd technology stack"><li>FastAPI</li><li>PostgreSQL</li><li>Next.js</li><li>TypeScript</li><li>Railway</li><li>Vercel</li></ul>
