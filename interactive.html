@@ -51,8 +51,6 @@
       --text-faint: #aea597;
       --line: rgba(236, 224, 207, 0.2);
       --focus: #f2c48f;
-      --deck: #161b22;
-      --deck-line: #46536a;
 
       --serif: "Cormorant Garamond", Georgia, serif;
       --sans: "DM Sans", Arial, sans-serif;
@@ -292,36 +290,15 @@
       transform: translateY(-1px);
     }
 
-    /* Play area: deck | hand | contact card */
+    /* Play area: centered hand + contact card beside it */
     .play {
       width: 100%;
       margin-top: clamp(16px, 4.4svh, 42px);
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      grid-template-columns: minmax(0, 0.62fr) auto minmax(0, 1fr);
       grid-template-areas:
-        "deck hand biz"
+        ". hand biz"
         "hint hint hint";
-    }
-
-    .deck-area { grid-area: deck; position: relative; }
-    .deck {
-      position: absolute;
-      left: calc(var(--card-w) * -0.34);
-      top: calc(var(--card-h) * -0.02);
-      width: calc(var(--card-w) * 1.04);
-      aspect-ratio: 5 / 7;
-      filter:
-        drop-shadow(0 2px 0 #2b3038)
-        drop-shadow(0 2px 0 #23272e)
-        drop-shadow(0 2px 0 #1d2026)
-        drop-shadow(0 2px 0 #181a1f)
-        drop-shadow(0 18px 22px rgba(0, 0, 0, 0.65));
-    }
-    .deck svg {
-      display: block;
-      width: 100%;
-      height: 100%;
-      transform: rotate(72deg);
     }
 
     .hand {
@@ -467,7 +444,7 @@
     .effect {
       display: block;
       max-width: 13em;
-      margin-top: 6px;
+      margin-top: 9px;
       font-size: 13px;
       line-height: 1.32;
       color: var(--ink-muted);
@@ -477,13 +454,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: calc(100% - 40px);
+      width: calc(100% - 56px);
       margin-top: auto;
       padding-bottom: 4px;
       border-bottom: 1px solid var(--gold-line);
       font-size: 12px;
       font-weight: 600;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.02em;
       text-transform: uppercase;
       line-height: 1.2;
       color: var(--ink-muted);
@@ -492,7 +469,7 @@
     .back {
       transform: rotateY(180deg);
       justify-content: flex-start;
-      padding: 20px 10px 6px;
+      padding: 19px 10px 6px;
     }
     .band {
       position: absolute;
@@ -514,14 +491,14 @@
       display: block;
       margin-top: 5px;
       font-size: 12px;
-      line-height: 1.32;
+      line-height: 1.3;
       color: var(--ink);
       text-wrap: pretty;
     }
     .m-stack {
       display: block;
       width: 100%;
-      margin-top: 5px;
+      margin-top: 8px;
       padding-top: 4px;
       border-top: 1px solid rgba(104, 28, 45, 0.35);
       font-size: 12px;
@@ -582,8 +559,8 @@
       grid-area: biz;
       display: flex;
       align-items: flex-end;
-      justify-content: center;
-      padding: 0 16px calc(var(--link-space) + 12px);
+      justify-content: flex-start;
+      padding: 0 16px calc(var(--link-space) + 12px) clamp(22px, 2.2vw, 38px);
     }
     .bizcard {
       position: relative;
@@ -670,15 +647,14 @@
     /* Deal-in (first visit per session only; WAAPI handles the motion) */
     .deal .slot { opacity: 0; }
 
-    /* Narrower desktop: no room beside the row for the deck or the contact card */
+    /* Narrower desktop: no room beside the row for the contact card */
     @media (max-width: 1180px) {
       .play {
         grid-template-columns: 1fr;
         grid-template-areas: "hand" "hint" "biz";
         justify-items: center;
       }
-      .deck-area { display: none; }
-      .biz-area { padding: 36px 16px 24px; }
+      .biz-area { justify-content: center; padding: 36px 16px 24px; }
     }
 
     /* Short windows: keep only the flipped card's project link */
@@ -692,40 +668,48 @@
     /* Mobile and small tablets: 2x2 grid, flip in place */
     @media (max-width: 860px) {
       :root {
-        --card-w: min(calc((100vw - 56px) / 2), 190px);
+        --card-w: min(calc((100vw - 44px) / 2), 190px);
         --card-h: calc(var(--card-w) * 7 / 5);
       }
       .hand {
         display: grid;
         grid-template-columns: repeat(2, var(--card-w));
-        gap: 44px 16px;
+        gap: 44px 12px;
         padding-bottom: 34px;
       }
       .hand .slot.is-flipped .card { transform: rotate(0deg); }
       .slot.is-flipped .view-link { transform: translateX(-50%); }
+      .front { padding: 16px 8px 8px; }
+      .corner { top: 8px; left: 8px; }
+      .corner.br { top: auto; left: auto; bottom: 8px; right: 8px; }
+      .pip { width: 32px; height: 32px; }
+      .title { margin-top: 7px; font-size: 18px; line-height: 1.06; }
+      .effect { margin-top: 12px; font-size: 12px; line-height: 1.25; }
+      .f-stack { width: calc(100% - 58px); letter-spacing: 0.01em; }
+      .back { padding: 17px 8px 5px; }
+      .m-label { font-size: 16px; }
+      .m-text { margin-top: 4px; line-height: 1.24; }
+      .m-stack { margin-top: 7px; padding-top: 3px; }
     }
 
     @media (max-width: 720px) {
       .topbar {
-        flex-wrap: wrap;
-        justify-content: center;
-        row-gap: 0;
-        padding-top: 8px;
+        width: calc(100% - 24px);
+        min-height: 52px;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        gap: 8px;
       }
-      .nav { gap: 16px; }
-      .nav a:not(.btn) { font-size: 14px; }
-      .nav .btn-small { padding: 0 14px; }
-      main { padding-top: 24px; }
-      h1 { font-size: clamp(48px, 14vw, 64px); }
-      .positioning { font-size: 15px; }
-      .play { margin-top: 32px; }
+      .brand { font-size: clamp(15px, 4.2vw, 20px); white-space: nowrap; }
+      .nav { gap: clamp(8px, 2.4vw, 14px); }
+      .nav a:not(.btn) { font-size: 12px; min-height: 40px; }
+      .nav .btn-small { min-height: 34px; padding: 0 10px; font-size: 12px; gap: 4px; white-space: nowrap; }
+      main { padding-top: 20px; }
+      h1 { font-size: clamp(46px, 13.5vw, 64px); }
+      .positioning { font-size: 14px; }
+      .play { margin-top: 28px; }
       .bizcard { transform: rotate(-3deg); }
       .bizcard:hover, .bizcard:focus-within { transform: translateY(-4px) rotate(-2deg); }
-    }
-
-    @media (max-width: 360px) {
-      .nav { gap: 12px; }
-      .nav .btn-small { padding: 0 12px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -756,10 +740,6 @@
       <symbol id="s-heart" viewBox="0 0 24 24"><path d="M12 21C9 18.6 3 14.4 3 9.3A4.7 4.7 0 0 1 12 7a4.7 4.7 0 0 1 9 2.3c0 5.1-6 9.3-9 11.7z"/></symbol>
       <symbol id="s-club" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4.2"/><circle cx="7" cy="13.5" r="4.2"/><circle cx="17" cy="13.5" r="4.2"/><path d="M11 12h2l1.2 9h-4.4z"/></symbol>
       <symbol id="s-diamond" viewBox="0 0 24 24"><path d="M12 2l7.5 10L12 22 4.5 12z"/></symbol>
-      <pattern id="gq-navy" width="6" height="4" patternUnits="userSpaceOnUse">
-        <path d="M0 2Q1.5 0 3 2T6 2" fill="none" stroke="#3a4558" stroke-width=".45"/>
-        <path d="M0 2Q1.5 4 3 2T6 2" fill="none" stroke="#3a4558" stroke-width=".45"/>
-      </pattern>
       <pattern id="gq-burg" width="9" height="18" patternUnits="userSpaceOnUse">
         <rect width="9" height="18" fill="#f4e9d8"/>
         <path d="M0 9Q2.25 2 4.5 9T9 9" fill="none" stroke="#681c2d" stroke-width=".7"/>
@@ -797,33 +777,6 @@
 
     <section class="play" aria-labelledby="work-title">
       <h2 class="sr-only" id="work-title">Selected work</h2>
-
-      <div class="deck-area" aria-hidden="true">
-        <div class="deck">
-          <svg viewBox="0 0 100 140" focusable="false">
-            <rect x=".5" y=".5" width="99" height="139" rx="6" fill="#161b22" stroke="#2c3442"/>
-            <rect x="6" y="6" width="88" height="128" rx="3" fill="url(#gq-navy)" stroke="#46536a" stroke-width=".6"/>
-            <rect x="9" y="9" width="82" height="122" rx="2" fill="none" stroke="#46536a" stroke-width=".35"/>
-            <g transform="translate(50 70)" fill="none" stroke="#56637b" stroke-width=".35">
-              <ellipse rx="34" ry="11"/>
-              <ellipse rx="34" ry="11" transform="rotate(15)"/>
-              <ellipse rx="34" ry="11" transform="rotate(30)"/>
-              <ellipse rx="34" ry="11" transform="rotate(45)"/>
-              <ellipse rx="34" ry="11" transform="rotate(60)"/>
-              <ellipse rx="34" ry="11" transform="rotate(75)"/>
-              <ellipse rx="34" ry="11" transform="rotate(90)"/>
-              <ellipse rx="34" ry="11" transform="rotate(105)"/>
-              <ellipse rx="34" ry="11" transform="rotate(120)"/>
-              <ellipse rx="34" ry="11" transform="rotate(135)"/>
-              <ellipse rx="34" ry="11" transform="rotate(150)"/>
-              <ellipse rx="34" ry="11" transform="rotate(165)"/>
-              <circle r="16" fill="#161b22" stroke="#8b97ae" stroke-width=".75"/>
-              <circle r="13.2" stroke="#8b97ae" stroke-width=".4"/>
-            </g>
-            <text x="50" y="75" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-weight="600" font-size="14" fill="#d8cbb8" letter-spacing="-.4" transform="rotate(-72 50 70)">BL</text>
-          </svg>
-        </div>
-      </div>
 
       <ul class="hand">
         <!-- A♠ Microsoft Intune MQP -->
@@ -1016,23 +969,20 @@
       });
       window.addEventListener('resize', updateSpot);
 
-      /* Deal-in from the deck, first visit per session only */
+      /* Deal-in from table center, first visit per session only */
       if (root.classList.contains('deal')) {
         try {
-          var deck = document.querySelector('.deck');
-          var dr = deck && deck.offsetParent ? deck.getBoundingClientRect() : null;
+          var hr = hand.getBoundingClientRect();
+          var cx = hr.left + hr.width / 2;
           slots.forEach(function (s, i) {
             if (!s.animate) return;
             var r = s.getBoundingClientRect();
-            var ox = dr ? dr.left + dr.width / 2 : -r.width;
-            var oy = dr ? dr.top + dr.height / 2 : r.top + r.height / 2;
-            var dx = ox - (r.left + r.width / 2);
-            var dy = oy - (r.top + r.height / 2);
+            var dx = Math.round((cx - (r.left + r.width / 2)) * 0.22);
             s.animate([
-              { transform: 'translate(' + dx + 'px,' + dy + 'px) rotate(-18deg)', opacity: 0 },
-              { opacity: 1, offset: 0.2 },
+              { transform: 'translate(' + dx + 'px, 28px) rotate(-4deg)', opacity: 0 },
+              { opacity: 1, offset: 0.25 },
               { transform: 'none', opacity: 1 }
-            ], { duration: 430, delay: i * 90, easing: 'cubic-bezier(0.2, 0.75, 0.25, 1)', fill: 'backwards' });
+            ], { duration: 420, delay: i * 85, easing: 'cubic-bezier(0.2, 0.75, 0.25, 1)', fill: 'backwards' });
           });
           window.sessionStorage.setItem('bl-dealt', '1');
         } catch (e) { /* show cards without the deal-in */ }
