@@ -300,6 +300,7 @@
     }
 
     .hero-actions { margin-top: 2rem; }
+    .hero-capstone { max-width: 760px; margin-top: 0.75rem; color: var(--text-muted); font-size: 0.92rem; font-weight: 300; }
     .hero-links { gap: 1.25rem; margin-top: 0.75rem; }
 
     .availability {
@@ -333,6 +334,7 @@
       align-items: start;
       padding-block: clamp(2.75rem, 5vw, 4.5rem);
       border-top: 1px solid var(--border);
+      scroll-margin-top: calc(var(--nav-height) + 20px);
     }
 
     .featured-project:first-child {
@@ -408,7 +410,8 @@
     }
 
     .proof-item {
-      flex: 1 1 135px;
+      flex: 1 1 auto;
+      align-content: center;
       padding: 0.8rem 0.9rem 0.8rem 0;
       color: var(--text-muted);
       font-size: 0.7rem;
@@ -419,6 +422,7 @@
 
     .proof-item + .proof-item { padding-left: 0.9rem; border-left: 1px solid var(--border); }
     .proof-item strong { display: block; color: var(--navy); font-family: var(--serif); font-size: 1.35rem; font-weight: 500; letter-spacing: 0; text-transform: none; }
+    .proof-item strong:not(:only-of-type) { display: inline; }
 
     .stack-list,
     .tag-list {
@@ -530,6 +534,15 @@
       font-weight: 300;
     }
 
+    .about-copy a {
+      color: var(--burgundy);
+      font-weight: 400;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+    }
+
+    .about-copy a:hover { color: var(--burgundy-dark); }
+
     .skills-list {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -621,7 +634,7 @@
     @media (max-width: 520px) {
       .hero-actions .button { width: 100%; }
       .project-meta { display: grid; gap: 0.25rem; }
-      .proof-row { display: grid; grid-template-columns: 1fr 1fr; }
+      .proof-row { display: grid; grid-template-columns: auto 1fr; }
       .proof-item + .proof-item { border-left: 0; }
       .proof-item:nth-child(even) { padding-left: 0.9rem; border-left: 1px solid var(--border); }
       .secondary-project { grid-template-columns: 1fr; gap: 0.65rem; }
@@ -663,6 +676,7 @@
         <p class="eyebrow">Software Engineer</p>
         <h1 class="hero-title">Benson <em>Lin</em></h1>
         <p class="hero-positioning">Software engineer building reliable full-stack products with Python, FastAPI, Java, Spring Boot, and PostgreSQL. WPI B.S./M.S. Computer Science graduate.</p>
+        <p class="hero-capstone">Sponsored Microsoft Intune capstone: HMM-based UI friction detection at 90.1% F1.</p>
         <div class="hero-actions">
           <a class="button button-primary" href="#work">View Featured Work</a>
           <a class="button button-secondary" href="./Benson_Lin_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View résumé PDF in a new tab">View Résumé</a>
@@ -670,6 +684,7 @@
         <div class="hero-links" aria-label="Professional profiles">
           <a class="text-link" href="https://github.com/Zirins" target="_blank" rel="noopener noreferrer" aria-label="Benson Lin on GitHub (opens in a new tab)">GitHub ↗</a>
           <a class="text-link" href="https://www.linkedin.com/in/benson-lin-bl" target="_blank" rel="noopener noreferrer" aria-label="Benson Lin on LinkedIn (opens in a new tab)">LinkedIn ↗</a>
+          <a class="text-link" href="interactive.html">Interactive view →</a>
         </div>
         <p class="availability">Open to entry-level Software Engineer and Full-Stack Engineer roles.</p>
       </div>
@@ -682,7 +697,7 @@
         <p class="section-intro">Three projects covering transactional inventory flows, anti-abuse community platforms, and telemetry and incident systems.</p>
 
         <div class="featured-list">
-          <article class="featured-project">
+          <article class="featured-project" id="dropforge">
             <figure class="project-media project-media--dropforge">
               <img src="dropforge.png" width="1920" height="3223" alt="DropForge catalog showing limited-release products with live, upcoming, sold-out, and ended inventory states" fetchpriority="high" decoding="async">
             </figure>
@@ -692,8 +707,7 @@
               <p class="project-summary">A backend for limited-quantity product drops. When many people try to reserve the last few units at the same moment, the stock can't go below zero, and a retried request can't create a second reservation. I built the reservation and checkout flow in Spring Boot on PostgreSQL and tested it against a real database instead of mocks.</p>
               <div class="proof-row" aria-label="DropForge verified proof points">
                 <div class="proof-item"><strong>81</strong> backend tests</div>
-                <div class="proof-item"><strong>24 / 57</strong> unit &amp; integration</div>
-                <div class="proof-item"><strong>Live</strong> demo</div>
+                <div class="proof-item"><strong>24</strong> unit · <strong>57</strong> integration</div>
               </div>
               <ul class="stack-list" aria-label="DropForge technology stack"><li>Java</li><li>Spring Boot</li><li>PostgreSQL</li><li>Next.js</li><li>Docker</li><li>Flyway</li><li>Testcontainers</li><li>GitHub Actions</li></ul>
               <div class="project-actions">
@@ -702,17 +716,14 @@
             </div>
           </article>
 
-          <article class="featured-project">
+          <article class="featured-project" id="herd">
             <figure class="project-media project-media--herd">
               <img src="herd.png" width="3840" height="2160" alt="Herd WPI student discussion wall with algorithmically ranked comments, helpful votes, and course commentary" loading="lazy" decoding="async">
             </figure>
             <div class="project-content">
               <div class="project-meta"><span class="project-index">02</span><span class="project-category">Campus community platform</span></div>
               <h3 class="project-title">Herd</h3>
-              <p class="project-summary">A site where WPI students leave anonymous comments about courses and professors. There are no accounts, so most of the work went into the backend: every comment is read before it goes up, rate limits and Turnstile slow down spam, and the feed ranks recent comments with helpful votes higher. Shared with WPI students through a Fizz post.</p>
-              <div class="proof-row" aria-label="Herd verified proof points">
-                <div class="proof-item"><strong>Live</strong> demo</div>
-              </div>
+              <p class="project-summary">A site where WPI students leave anonymous comments about courses and professors. There are no accounts, so most of the work went into the backend: every comment is read before it goes up, rate limits and Turnstile slow down spam, and the feed ranks recent comments with helpful votes higher. ~50 student reviews since launch.</p>
               <ul class="stack-list" aria-label="Herd technology stack"><li>FastAPI</li><li>PostgreSQL</li><li>Next.js</li><li>TypeScript</li><li>Railway</li><li>Vercel</li></ul>
               <div class="project-actions">
                 <a class="button button-primary" href="https://herd-wpi.vercel.app" target="_blank" rel="noopener noreferrer" aria-label="Open the Herd live demo in a new tab">Live Demo ↗</a>
@@ -720,7 +731,7 @@
             </div>
           </article>
 
-          <article class="featured-project">
+          <article class="featured-project" id="vigil">
             <figure class="project-media project-media--vigil">
               <img src="vigil.png" width="2880" height="1800" alt="Vigil service health dashboard showing service status, open incidents, severity, and recent anomaly detections" loading="lazy" decoding="async">
             </figure>
@@ -781,22 +792,8 @@
           <article class="secondary-project">
             <span class="secondary-index" aria-hidden="true">04</span>
             <div>
-              <h3 class="secondary-title">Dao Hold</h3>
-              <p class="secondary-category">Mobile game systems</p>
-              <p class="secondary-summary">A portrait xianxia roguelite where players defend a Spirit Vein Anchor against a segmented advancing serpent, build technique loadouts, draft mid-run upgrades, and progress through persistent cultivation systems.</p>
-              <ul class="stack-list" aria-label="Dao Hold technologies"><li>TypeScript</li><li>Phaser 3</li><li>Vite</li><li>Capacitor</li></ul>
-              <div class="secondary-actions">
-                <a class="button button-small button-primary" href="https://daohold.vercel.app" target="_blank" rel="noopener noreferrer" aria-label="Play Dao Hold in a new tab">Play ↗</a>
-              </div>
-            </div>
-          </article>
-
-          <article class="secondary-project">
-            <span class="secondary-index" aria-hidden="true">05</span>
-            <div>
               <h3 class="secondary-title">Huddle Chat</h3>
-              <p class="secondary-category">Real-time commuter chat</p>
-              <p class="secondary-summary">A commuter chat product with real-time messages, threads, reactions, replies, and live MBTA train and stop data, validated during a live transit commute.</p>
+              <p class="secondary-summary">Real-time commuter chat with threads, reactions, replies, and live MBTA train and stop data.</p>
               <ul class="stack-list" aria-label="Huddle Chat technologies"><li>Next.js</li><li>TypeScript</li><li>MBTA API</li><li>Docker</li></ul>
               <div class="secondary-actions">
                 <a class="button button-small button-primary" href="https://huddle.stoiber.network/" target="_blank" rel="noopener noreferrer" aria-label="Open the Huddle Chat live site in a new tab">Live ↗</a>
@@ -806,11 +803,10 @@
           </article>
 
           <article class="secondary-project">
-            <span class="secondary-index" aria-hidden="true">06</span>
+            <span class="secondary-index" aria-hidden="true">05</span>
             <div>
               <h3 class="secondary-title">Mass General Brigham Hospital Routing</h3>
-              <p class="secondary-category">Sponsored academic project</p>
-              <p class="secondary-summary">A hospital wayfinding system using A* and Dijkstra routing with SVG multi-floor visualization, built by an Agile student team with CI and Docker-based delivery.</p>
+              <p class="secondary-summary">Hospital wayfinding system using A* and Dijkstra routing with SVG multi-floor visualization.</p>
               <ul class="stack-list" aria-label="Hospital routing technologies"><li>React</li><li>TypeScript</li><li>A* / Dijkstra</li><li>Docker</li></ul>
             </div>
           </article>
@@ -826,6 +822,7 @@
         <div class="about-copy">
           <p class="section-label" id="about-title">About</p>
           <p>I’m a WPI B.S./M.S. Computer Science graduate. I'm most interested in software where the hard part isn't just writing the endpoint, but deciding how the system should behave when things fail, overlap, or get messy. Most of my recent work has been backend-heavy, although I usually build the frontend too because I like seeing the whole product come together.</p>
+          <p>I also build games on the side. <a href="https://daohold.vercel.app" target="_blank" rel="noopener noreferrer">Dao Hold</a> is a mobile roguelite I'm developing.</p>
           <p>Open to software engineering roles across the U.S. and remote.</p>
           <ul class="skills-list" aria-label="Primary engineering skills"><li>Python</li><li>FastAPI</li><li>PostgreSQL</li><li>Java</li><li>Spring Boot</li><li>TypeScript</li><li>React / Next.js</li><li>Docker</li><li>Flyway</li><li>Testcontainers</li><li>GitHub Actions</li></ul>
         </div>
