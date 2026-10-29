@@ -59,7 +59,7 @@
 
       --card-h: clamp(238px, 34svh, 322px);
       --card-w: calc(var(--card-h) * 5 / 7);
-      --flip-scale: 1.14;
+      --flip-scale: 1.08;
       --link-space: 30px;
 
       --noise-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -.45'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -256,28 +256,7 @@
       padding-inline: 20px;
       text-align: center;
     }
-    .eyebrow {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
-    .eyebrow::before, .eyebrow::after,
-    .caption::before, .caption::after {
-      content: "";
-      width: clamp(36px, 7vw, 110px);
-      height: 1px;
-      background: var(--line);
-    }
-    .eyebrow { padding-left: 0.3em; }
     h1 {
-      margin-top: 6px;
       font-family: var(--serif);
       font-weight: 600;
       font-size: clamp(52px, 10svh, 104px);
@@ -321,14 +300,13 @@
       grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
       grid-template-areas:
         "deck hand biz"
-        "caption caption caption"
         "hint hint hint";
     }
 
     .deck-area { grid-area: deck; position: relative; }
     .deck {
       position: absolute;
-      left: calc(var(--card-w) * -0.62);
+      left: calc(var(--card-w) * -0.34);
       top: calc(var(--card-h) * -0.02);
       width: calc(var(--card-w) * 1.04);
       aspect-ratio: 5 / 7;
@@ -349,7 +327,7 @@
     .hand {
       grid-area: hand;
       display: flex;
-      gap: clamp(14px, 1.9vw, 34px);
+      gap: clamp(20px, 2.4vw, 40px);
       list-style: none;
       padding: 0 0 var(--link-space);
     }
@@ -360,10 +338,10 @@
       flex: none;
       perspective: 1400px;
     }
-    .slot:nth-child(1) { --r: -4deg; --y: 6px; }
-    .slot:nth-child(2) { --r: 4deg; --y: 0px; }
-    .slot:nth-child(3) { --r: -2deg; --y: 4px; }
-    .slot:nth-child(4) { --r: 5deg; --y: 9px; }
+    .slot:nth-child(1) { --r: -1.3deg; --y: 3px; }
+    .slot:nth-child(2) { --r: 1.2deg; --y: 0px; }
+    .slot:nth-child(3) { --r: -0.8deg; --y: 2px; }
+    .slot:nth-child(4) { --r: 1.6deg; --y: 4px; }
     .slot.is-flipped { z-index: 10; }
 
     .card {
@@ -384,11 +362,11 @@
     .card:focus-visible { outline-offset: 6px; border-radius: 12px; }
 
     /* Invitation: DropForge rests slightly raised until another card is hovered or focused */
-    .slot.is-invite .card { transform: translateY(-12px) rotate(var(--r)); }
+    .slot.is-invite .card { transform: translateY(-8px) rotate(var(--r)); }
     .hand:where(:has(.card:hover, .card:focus-visible), .has-flipped) .slot.is-invite .card { transform: translateY(var(--y)) rotate(var(--r)); }
     .hand .slot .card:hover,
-    .hand .slot .card:focus-visible { transform: translateY(-18px) rotate(0deg); }
-    .hand .slot.is-flipped .card { transform: translateY(-4px) rotate(0deg) scale(var(--flip-scale)); }
+    .hand .slot .card:focus-visible { transform: translateY(-14px) rotate(0deg); }
+    .hand .slot.is-flipped .card { transform: translateY(-10px) rotate(0deg) scale(var(--flip-scale)); }
 
     .card-inner {
       position: relative;
@@ -414,15 +392,24 @@
       backface-visibility: hidden;
       box-shadow:
         inset 0 0 0 1px rgba(70, 45, 20, 0.16),
-        0 3px 6px rgba(0, 0, 0, 0.35),
-        0 16px 26px -8px rgba(0, 0, 0, 0.7);
+        0 2px 4px rgba(0, 0, 0, 0.28),
+        0 8px 16px -2px rgba(0, 0, 0, 0.42),
+        0 20px 34px -8px rgba(0, 0, 0, 0.68);
       transition: box-shadow 0.3s ease;
     }
-    .card:hover .face, .card:focus-visible .face, .is-flipped .face {
+    .card:hover .face, .card:focus-visible .face {
       box-shadow:
-        inset 0 0 0 1px rgba(70, 45, 20, 0.16),
-        0 6px 10px rgba(0, 0, 0, 0.35),
-        0 30px 40px -12px rgba(0, 0, 0, 0.75);
+        inset 0 0 0 1px rgba(70, 45, 20, 0.18),
+        0 4px 8px rgba(0, 0, 0, 0.32),
+        0 14px 24px -4px rgba(0, 0, 0, 0.48),
+        0 28px 42px -10px rgba(0, 0, 0, 0.74);
+    }
+    .is-flipped .face {
+      box-shadow:
+        inset 0 0 0 1px rgba(70, 45, 20, 0.22),
+        0 6px 12px rgba(0, 0, 0, 0.38),
+        0 18px 32px -4px rgba(0, 0, 0, 0.58),
+        0 36px 56px -10px rgba(0, 0, 0, 0.82);
     }
     .face::after {
       content: "";
@@ -456,32 +443,33 @@
     .s-navy { color: var(--ink); }
     .s-burg { color: var(--burgundy); }
 
-    .icon {
+    .pip {
       display: block;
-      width: 68%;
-      aspect-ratio: 120 / 84;
-      height: auto;
+      width: clamp(46px, 6.2svh, 60px);
+      height: clamp(46px, 6.2svh, 60px);
       margin-top: auto;
       flex: none;
-      overflow: visible;
+      fill: currentColor;
+      filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.45));
     }
 
     .nw { white-space: nowrap; }
     .title {
       display: block;
-      margin-top: 8px;
-      font-size: 14px;
+      margin-top: 12px;
+      font-family: var(--serif);
+      font-size: 20px;
       font-weight: 600;
-      line-height: 1.18;
+      line-height: 1.08;
       color: var(--ink);
       text-wrap: balance;
     }
     .effect {
       display: block;
-      max-width: 13.5em;
-      margin-top: 4px;
-      font-size: 12px;
-      line-height: 1.3;
+      max-width: 13em;
+      margin-top: 6px;
+      font-size: 13px;
+      line-height: 1.32;
       color: var(--ink-muted);
       text-wrap: balance;
     }
@@ -579,26 +567,9 @@
       transform: translate(-50%, calc(var(--card-h) * (var(--flip-scale) - 1) * 0.85 - 2px));
     }
 
-    .caption {
-      grid-area: caption;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      margin-top: clamp(8px, 1.8svh, 22px);
-      padding-inline: 20px;
-      font-family: var(--serif);
-      font-style: italic;
-      font-size: clamp(18px, 2.3svh, 22px);
-      line-height: 1.3;
-      color: var(--text-muted);
-      text-align: center;
-      transition: opacity 0.3s ease;
-    }
-    .play.has-flipped .caption { opacity: 0; }
     .hint {
       grid-area: hint;
-      margin-top: 6px;
+      margin-top: clamp(12px, 2.2svh, 24px);
       padding-inline: 20px;
       font-size: 13px;
       line-height: 1.5;
@@ -703,7 +674,7 @@
     @media (max-width: 1180px) {
       .play {
         grid-template-columns: 1fr;
-        grid-template-areas: "hand" "caption" "hint" "biz";
+        grid-template-areas: "hand" "hint" "biz";
         justify-items: center;
       }
       .deck-area { display: none; }
@@ -748,8 +719,6 @@
       h1 { font-size: clamp(48px, 14vw, 64px); }
       .positioning { font-size: 15px; }
       .play { margin-top: 32px; }
-      .caption { font-size: 18px; margin-top: 4px; }
-      .caption::before, .caption::after { width: 24px; }
       .bizcard { transform: rotate(-3deg); }
       .bizcard:hover, .bizcard:focus-within { transform: translateY(-4px) rotate(-2deg); }
     }
@@ -817,7 +786,6 @@
 
   <main id="main-content">
     <section class="intro" aria-labelledby="name">
-      <p class="eyebrow">Software Engineer</p>
       <h1 id="name">Benson Lin</h1>
       <p class="positioning">Software engineer building reliable full-stack products with Python, FastAPI, Java, Spring Boot, and PostgreSQL.</p>
       <a class="btn" href="./Benson_Lin_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="View résumé PDF in a new tab">View résumé</a>
@@ -849,10 +817,10 @@
               <ellipse rx="34" ry="11" transform="rotate(135)"/>
               <ellipse rx="34" ry="11" transform="rotate(150)"/>
               <ellipse rx="34" ry="11" transform="rotate(165)"/>
-              <circle r="15" fill="#161b22" stroke="#6a7790" stroke-width=".6"/>
-              <circle r="12.5" stroke="#6a7790" stroke-width=".3"/>
+              <circle r="16" fill="#161b22" stroke="#8b97ae" stroke-width=".75"/>
+              <circle r="13.2" stroke="#8b97ae" stroke-width=".4"/>
             </g>
-            <text x="50" y="74.5" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-weight="600" font-size="12" fill="#97a2b6" letter-spacing="-.4" transform="rotate(-72 50 70)">BL</text>
+            <text x="50" y="75" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-weight="600" font-size="14" fill="#d8cbb8" letter-spacing="-.4" transform="rotate(-72 50 70)">BL</text>
           </svg>
         </div>
       </div>
@@ -866,20 +834,7 @@
                 <span class="corner tl s-navy" aria-hidden="true"><span class="rank">A</span><svg class="suit"><use href="#s-spade"/></svg></span>
                 <span class="corner br s-navy" aria-hidden="true"><span class="rank">A</span><svg class="suit"><use href="#s-spade"/></svg></span>
                 <span class="sr-only">Ace of spades.</span>
-                <svg class="icon" viewBox="0 0 120 84" aria-hidden="true" focusable="false">
-                  <rect x="2" y="2" width="116" height="80" rx="6" fill="#faf3e8" stroke="#1c2340" stroke-width="2"/>
-                  <path d="M2 16h116" stroke="#1c2340" stroke-width="1.6"/>
-                  <circle cx="10" cy="9" r="2" fill="#1c2340"/><circle cx="17" cy="9" r="2" fill="#1c2340"/><circle cx="24" cy="9" r="2" fill="#1c2340"/>
-                  <path d="M12 72h96" stroke="#1c2340" stroke-width="1" opacity=".5"/>
-                  <path d="M24 72v-3M40 72v-3M56 72v-3M72 72v-3M88 72v-3M104 72v-3" stroke="#1c2340" stroke-width="1" opacity=".5"/>
-                  <polyline points="16,58 30,52 44,57 58,49 72,31 86,51 100,46 108,50" fill="none" stroke="#1c2340" stroke-width="1.6" stroke-linejoin="round"/>
-                  <g fill="#faf3e8" stroke="#1c2340" stroke-width="1.4">
-                    <circle cx="16" cy="58" r="2.6"/><circle cx="30" cy="52" r="2.6"/><circle cx="44" cy="57" r="2.6"/><circle cx="58" cy="49" r="2.6"/>
-                    <circle cx="86" cy="51" r="2.6"/><circle cx="100" cy="46" r="2.6"/>
-                  </g>
-                  <circle cx="72" cy="31" r="8.5" fill="none" stroke="#681c2d" stroke-width="1" opacity=".6"/>
-                  <circle cx="72" cy="31" r="4.6" fill="#681c2d"/>
-                </svg>
+                <svg class="pip s-navy" aria-hidden="true" focusable="false"><use href="#s-spade"/></svg>
                 <span class="title"><span class="nw">Microsoft Intune</span> MQP</span>
                 <span class="effect">HMM-based UI friction detection</span>
                 <span class="f-stack"><span>Python</span></span>
@@ -905,16 +860,7 @@
                 <span class="corner tl s-burg" aria-hidden="true"><span class="rank">K</span><svg class="suit"><use href="#s-heart"/></svg></span>
                 <span class="corner br s-burg" aria-hidden="true"><span class="rank">K</span><svg class="suit"><use href="#s-heart"/></svg></span>
                 <span class="sr-only">King of hearts.</span>
-                <svg class="icon" viewBox="0 0 120 84" aria-hidden="true" focusable="false">
-                  <rect x="2" y="2" width="116" height="80" rx="6" fill="#faf3e8" stroke="#681c2d" stroke-width="2"/>
-                  <path d="M2 16h116" stroke="#681c2d" stroke-width="1.6"/>
-                  <circle cx="10" cy="9" r="2" fill="#681c2d"/><circle cx="17" cy="9" r="2" fill="#681c2d"/><circle cx="24" cy="9" r="2" fill="#681c2d"/>
-                  <g stroke="#681c2d" stroke-width="1.6" stroke-linejoin="round">
-                    <path d="M60 26l22 11-22 11-22-11z" fill="#faf3e8"/>
-                    <path d="M38 37l22 11v24L38 61z" fill="#681c2d" fill-opacity=".22"/>
-                    <path d="M82 37L60 48v24l22-11z" fill="#681c2d"/>
-                  </g>
-                </svg>
+                <svg class="pip s-burg" aria-hidden="true" focusable="false"><use href="#s-heart"/></svg>
                 <span class="title">DropForge</span>
                 <span class="effect">Limited-quantity drops that can’t oversell</span>
                 <span class="f-stack"><span>Spring Boot</span> <span>PostgreSQL</span></span>
@@ -940,14 +886,7 @@
                 <span class="corner tl s-navy" aria-hidden="true"><span class="rank">Q</span><svg class="suit"><use href="#s-club"/></svg></span>
                 <span class="corner br s-navy" aria-hidden="true"><span class="rank">Q</span><svg class="suit"><use href="#s-club"/></svg></span>
                 <span class="sr-only">Queen of clubs.</span>
-                <svg class="icon" viewBox="0 0 120 84" aria-hidden="true" focusable="false">
-                  <rect x="2" y="2" width="116" height="80" rx="6" fill="#faf3e8" stroke="#1c2340" stroke-width="2"/>
-                  <path d="M2 16h116" stroke="#1c2340" stroke-width="1.6"/>
-                  <circle cx="10" cy="9" r="2" fill="#1c2340"/><circle cx="17" cy="9" r="2" fill="#1c2340"/><circle cx="24" cy="9" r="2" fill="#1c2340"/>
-                  <path d="M60 25L86 70H34z" fill="none" stroke="#1c2340" stroke-width="2" stroke-linejoin="round"/>
-                  <path d="M60 40v15" stroke="#681c2d" stroke-width="3" stroke-linecap="round"/>
-                  <circle cx="60" cy="62.5" r="2" fill="#681c2d"/>
-                </svg>
+                <svg class="pip s-navy" aria-hidden="true" focusable="false"><use href="#s-club"/></svg>
                 <span class="title">Vigil</span>
                 <span class="effect">One incident, not a flood of alerts</span>
                 <span class="f-stack"><span>FastAPI</span> <span>PostgreSQL</span></span>
@@ -973,14 +912,7 @@
                 <span class="corner tl s-burg" aria-hidden="true"><span class="rank">J</span><svg class="suit"><use href="#s-diamond"/></svg></span>
                 <span class="corner br s-burg" aria-hidden="true"><span class="rank">J</span><svg class="suit"><use href="#s-diamond"/></svg></span>
                 <span class="sr-only">Jack of diamonds.</span>
-                <svg class="icon" viewBox="0 0 120 84" aria-hidden="true" focusable="false">
-                  <rect x="2" y="2" width="116" height="80" rx="6" fill="#faf3e8" stroke="#681c2d" stroke-width="2"/>
-                  <path d="M2 16h116" stroke="#681c2d" stroke-width="1.6"/>
-                  <circle cx="10" cy="9" r="2" fill="#681c2d"/><circle cx="17" cy="9" r="2" fill="#681c2d"/><circle cx="24" cy="9" r="2" fill="#681c2d"/>
-                  <path d="M34 25h52a7 7 0 0 1 7 7v26a7 7 0 0 1-7 7H50l-10 9v-9h-6a7 7 0 0 1-7-7V32a7 7 0 0 1 7-7z" fill="none" stroke="#681c2d" stroke-width="2" stroke-linejoin="round"/>
-                  <circle cx="60" cy="38" r="6" fill="#681c2d"/>
-                  <path d="M47 58a13 10 0 0 1 26 0z" fill="#681c2d"/>
-                </svg>
+                <svg class="pip s-burg" aria-hidden="true" focusable="false"><use href="#s-diamond"/></svg>
                 <span class="title">Herd</span>
                 <span class="effect">Anonymous WPI course comments without the spam</span>
                 <span class="f-stack"><span>FastAPI</span> <span>PostgreSQL</span></span>
@@ -999,7 +931,6 @@
         </li>
       </ul>
 
-      <p class="caption">The audience sees the effect; the engineering is the method.</p>
       <p class="hint">Click a card to turn it over.</p>
 
       <div class="biz-area">
