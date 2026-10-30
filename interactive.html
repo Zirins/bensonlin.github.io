@@ -50,7 +50,7 @@
       --text-muted: #cdc2b2;
       --text-faint: #aea597;
       --line: rgba(236, 224, 207, 0.2);
-      --focus: #f2c48f;
+      --focus: #cdb98c;
 
       --serif: "Cormorant Garamond", Georgia, serif;
       --sans: "DM Sans", Arial, sans-serif;
@@ -103,11 +103,15 @@
     button { font: inherit; color: inherit; }
     button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 
+    /* Keyboard focus ring: thin and muted. The pointer-nav class (set by script on any pointer press,
+       cleared on the next navigation key) keeps it off after a mouse click or tap, even in browsers
+       that leave :focus-visible true once a key has been pressed. */
     :focus-visible {
-      outline: 3px solid var(--focus);
+      outline: 2px solid var(--focus);
       outline-offset: 4px;
       border-radius: 4px;
     }
+    html.pointer-nav :focus-visible { outline: none; }
 
     .sr-only {
       position: absolute;
@@ -382,7 +386,6 @@
       transform: translateY(var(--y)) rotate(var(--r));
       transition: transform 0.24s cubic-bezier(0.2, 0.7, 0.2, 1);
     }
-    .card:focus-visible { outline-offset: 6px; border-radius: 12px; }
 
     /* Dimming layer: a flat warm overlay above both faces, faded by opacity only */
     .card::after {
@@ -732,12 +735,17 @@
     .method-panel { display: none; }
     @media (min-width: 1100px) and (min-height: 700px) {
       .hand.is-revealing {
+        /* Gap between the pair and the small row. It holds the "View project" link centered, with room
+           above and below it; fit-tight shrinks it first. */
+        --row-gap: 48px;
         width: 100%;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 32px 28px;
+        gap: var(--row-gap) 28px;
         /* with main's 10px bottom padding this keeps >= 24px under the (tilted) small row */
         padding-bottom: 16px;
+        /* Set by script when the pair's tilted top edge would sit closer than 12px to the text above it */
+        margin-top: var(--clear-pad, 0px);
       }
       .hand.is-revealing .slot {
         width: calc(var(--card-w) * var(--sk));
@@ -783,12 +791,17 @@
       .hand.is-revealing .slot.is-selected .view-link {
         display: inline-flex;
         visibility: visible;
-        top: calc(100% + 3px);
+        /* centered in the gap between the pair and the small row */
+        top: calc(100% + (var(--row-gap) - 24px) / 2);
         left: calc(100% + 12px);
+        /* above the seat (z-index 1): the selected card's large soft shadows otherwise paint over the link and dim it */
+        z-index: 3;
         color: var(--text);
+        text-decoration-color: rgba(236, 224, 207, 0.7);
         transform: translateX(-50%);
         animation: rv-fade 0.3s 0.18s both;
       }
+      .hand.is-revealing .slot.is-selected .view-link:hover { text-decoration-color: var(--burgundy-dot); }
 
       .hand.is-revealing .slot.is-selected .method-panel {
         display: block;
@@ -831,6 +844,10 @@
       }
       /* Short content sits centered between the top and the BL mark; long content falls back to top-aligned */
       .method-sheet .m-label { margin-top: auto; }
+      /* Method sentence as centered clause lines (script splits it; words are unchanged), then a short divider and the stack */
+      .method-sheet .m-line { display: block; text-wrap: balance; }
+      .method-sheet .m-line + .m-line { margin-top: 4px; }
+      .method-sheet .m-stack { width: 56%; margin-top: 9px; padding-top: 7px; text-align: center; }
       .method-sheet .mono { flex: none; margin-top: auto; width: 22px; height: 22px; font-size: 12px; color: var(--gold-text); border-color: rgba(217, 196, 143, 0.6); }
 
       @media (hover: hover) {
@@ -844,8 +861,7 @@
       main.fit-tight .intro .btn { margin-top: 8px; }
       main.fit-tight .proof { margin-top: 6px; }
       main.fit-tight .play { margin-top: 6px; }
-      main.fit-tight .hand.is-revealing { row-gap: 28px; }
-      main.fit-tight .hand.is-revealing .slot.is-selected .view-link { top: calc(100% + 2px); }
+      main.fit-tight .hand.is-revealing { --row-gap: 41px; }
       main.fit-head h1 { font-size: clamp(46px, 8.5svh, 90px); }
       main.fit-avail .proof li:nth-child(2) { display: none; }
       main.fit-hint .hint { display: none; }
@@ -1010,7 +1026,7 @@
               <span class="face back" aria-hidden="true" inert>
                 <span class="sr-only">Microsoft Intune MQP.</span>
                 <span class="m-label">The method</span>
-                <span class="m-text">Hidden Markov Model sequence detector (Baum-Welch training, Viterbi decoding), 90.1% F1, 65% fewer false positives.</span>
+                <span class="m-text" data-breaks="2">Hidden Markov Model sequence detector (Baum-Welch training, Viterbi decoding), 90.1% F1, 65% fewer false positives.</span>
                 <span class="m-stack">Stack: Python</span>
                 <span class="mono" aria-hidden="true">BL</span>
               </span>
@@ -1035,7 +1051,7 @@
               <span class="face back" aria-hidden="true" inert>
                 <span class="sr-only">DropForge.</span>
                 <span class="m-label">The method</span>
-                <span class="m-text">Atomic conditional inventory UPDATE, pessimistic row locks, 81 tests (24 unit · 57 integration) with Testcontainers.</span>
+                <span class="m-text" data-breaks="2">Atomic conditional inventory UPDATE, pessimistic row locks, 81 tests (24 unit · 57 integration) with Testcontainers.</span>
                 <span class="m-stack">Stack: Spring Boot, PostgreSQL</span>
                 <span class="mono" aria-hidden="true">BL</span>
               </span>
@@ -1060,7 +1076,7 @@
               <span class="face back" aria-hidden="true" inert>
                 <span class="sr-only">Vigil.</span>
                 <span class="m-label">The method</span>
-                <span class="m-text">Partial unique index for incidents, ROW_NUMBER query loads each service’s latest latency, error rate and severity in one query.</span>
+                <span class="m-text" data-breaks="1">Partial unique index for incidents, ROW_NUMBER query loads each service’s latest latency, error rate and severity in one query.</span>
                 <span class="m-stack">Stack: FastAPI, PostgreSQL</span>
                 <span class="mono" aria-hidden="true">BL</span>
               </span>
@@ -1085,7 +1101,7 @@
               <span class="face back" aria-hidden="true" inert>
                 <span class="sr-only">Herd.</span>
                 <span class="m-label">The method</span>
-                <span class="m-text">Every comment reviewed before posting, rate limits, Turnstile, helpful-vote ranking.</span>
+                <span class="m-text" data-breaks="3">Every comment reviewed before posting, rate limits, Turnstile, helpful-vote ranking.</span>
                 <span class="m-stack">Stack: FastAPI, PostgreSQL</span>
                 <span class="mono" aria-hidden="true">BL</span>
               </span>
@@ -1234,19 +1250,39 @@
       function setBig(b) { big = b; hand.style.setProperty('--bk', b); }
       function seatsFinal() { seats.forEach(function (s, i) { setSeat(i, 0, 0, targetK(i), false); }); }
 
-      /* Free vertical space in the agreed order; keep ~1.25x unless only the metric line is left to collapse */
+      /* Clearance: the pair's tilted top edge must stay MIN_CLEAR below the last line of the intro text.
+         The slot's top is the untilted top edge; the +-1deg tilt (see the reveal CSS) lifts a corner by about
+         half the width times sin(1deg). The card's tilt is a CSS transition, so it is computed here instead of
+         read from the card's rect, which would still show the old angle while fitting. */
+      var MIN_CLEAR = 13 /* 12px required, +1 for sub-pixel rounding */, TILT = Math.PI / 180;
+      var intro = document.querySelector('.intro');
+      function clearance() {
+        var slot = selected.closest('.slot');
+        var r = slot.getBoundingClientRect();
+        var rise = reduceMq.matches ? 0 : (r.width / 2) * Math.sin(TILT) + (r.height / 2) * (1 - Math.cos(TILT));
+        return (r.top - rise) - intro.getBoundingClientRect().bottom;
+      }
+      /* Push the hand down by exactly the shortfall (if any); the fit loop then counts it as overflow */
+      function settle() {
+        hand.style.setProperty('--clear-pad', '0px');
+        var c = clearance();
+        hand.style.setProperty('--clear-pad', (c < MIN_CLEAR ? Math.ceil((MIN_CLEAR - c) * 10) / 10 : 0) + 'px');
+      }
+
+      /* Free vertical space in the agreed order; keep ~1.25x unless only the metric line is left to collapse.
+         Every step also guarantees the clearance above the pair, so that space counts as part of the fit. */
       function fit() {
         var h = seats[0].offsetHeight;
         setBig(BIG);
         for (var n = 0; n <= 4; n++) {
-          setLevel(n); seatsFinal();
+          setLevel(n); seatsFinal(); settle();
           if (overflowY() <= 0) return;
         }
         var b = Math.floor((BIG - overflowY() / h) * 1000) / 1000;
-        if (b >= BIG_MIN) { setBig(b); seatsFinal(); return; }
-        setLevel(5); setBig(BIG); seatsFinal();
+        if (b >= BIG_MIN) { setBig(b); seatsFinal(); settle(); return; }
+        setLevel(5); setBig(BIG); seatsFinal(); settle();
         var o = overflowY();
-        if (o > 0) { setBig(Math.max(1, Math.floor((BIG - o / h) * 1000) / 1000)); seatsFinal(); }
+        if (o > 0) { setBig(Math.max(1, Math.floor((BIG - o / h) * 1000) / 1000)); seatsFinal(); settle(); }
       }
 
       function applyLayout() {
@@ -1258,13 +1294,43 @@
           fit();
         } else {
           setLevel(0); setBig(BIG); seatsFinal();
+          hand.style.setProperty('--clear-pad', '0px');
         }
+      }
+
+      /* Reveal panel only: show the method sentence as centered clause lines. The split is by top-level
+         commas (never inside parentheses), as many as data-breaks says; the comma at each break is dropped
+         and no word is added, removed or reworded. Anything that does not split as expected stays one block. */
+      function splitMethod(el) {
+        var n = parseInt(el.getAttribute('data-breaks'), 10);
+        if (!n) return;
+        var text = el.textContent, depth = 0, cuts = [];
+        for (var i = 0; i < text.length && cuts.length < n; i++) {
+          var ch = text.charAt(i);
+          if (ch === '(') depth++;
+          else if (ch === ')') depth = Math.max(0, depth - 1);
+          else if (ch === ',' && depth === 0) cuts.push(i);
+        }
+        if (cuts.length < n) return;
+        var parts = [], start = 0;
+        cuts.concat([text.length]).forEach(function (c) { parts.push(text.slice(start, c).trim()); start = c + 1; });
+        if (parts.some(function (p) { return !p; })) return;
+        el.textContent = '';
+        parts.forEach(function (p, i) {
+          var line = document.createElement('span');
+          line.className = 'm-line';
+          line.textContent = p;
+          if (i) el.appendChild(document.createTextNode(' ')); /* keeps copied and read text word-separated */
+          el.appendChild(line);
+        });
       }
 
       function fillPanel(card) {
         var back = card.querySelector('.back');
         sheet.textContent = '';
         Array.prototype.forEach.call(back.childNodes, function (n) { sheet.appendChild(n.cloneNode(true)); });
+        var mt = sheet.querySelector('.m-text');
+        if (mt) splitMethod(mt);
         panel.setAttribute('aria-label', card.querySelector('.title').textContent + ': The method');
         panel.classList.remove('is-in');
         void panel.offsetWidth;
@@ -1336,6 +1402,14 @@
         }
       });
       window.addEventListener('resize', updateSpot);
+
+      /* Focus ring for keyboard users only: remember the last kind of input. A pointer press turns the ring off
+         (CSS: html.pointer-nav); a navigation key turns it back on. Modifier keys alone do not count. */
+      var NAV_KEYS = { Tab: 1, Enter: 1, ' ': 1, Escape: 1, ArrowUp: 1, ArrowDown: 1, ArrowLeft: 1, ArrowRight: 1, Home: 1, End: 1, PageUp: 1, PageDown: 1 };
+      document.addEventListener('pointerdown', function () { root.classList.add('pointer-nav'); }, true);
+      document.addEventListener('keydown', function (e) {
+        if (NAV_KEYS[e.key] && !e.ctrlKey && !e.metaKey && !e.altKey) root.classList.remove('pointer-nav');
+      }, true);
 
       /* Deal-in from table center, first visit per session only */
       if (root.classList.contains('deal')) {
