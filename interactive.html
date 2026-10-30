@@ -60,8 +60,24 @@
       --flip-scale: 1.08;
       --link-space: 30px;
 
+      /* Selection state: others are dimmed by a black overlay of this alpha.
+         alpha 0.38 multiplies sRGB values by 0.62, i.e. the same result as brightness(0.62)
+         without animating a filter. Text on dimmed paper stays >= 4.6:1. */
+      --dim-alpha: 0.38;
+      --lift-y: -10px;
+      --lift-scale: 1.05;
+      --sel-ease: 0.2s;
+
+      /* Method side: dark slate paper, cream text, muted gold hairlines */
+      --slate: #232a35;
+      --paper-lit: #fbf3e5;
+      --gold-muted: rgba(214, 186, 126, 0.5);
+      --gold-text: #d9c48f;
+
       --noise-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -.45'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       --noise-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .28 0 0 0 0 .22 0 0 0 0 .15 0 0 0 .22 -.07'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      /* Paper grain for card faces: alpha is set by the pseudo-element opacity (0.05) */
+      --noise-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .24 0 0 0 0 .17 0 0 0 0 .1 0 0 0 2.4 -.75'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
 
     html { -webkit-text-size-adjust: 100%; }
@@ -129,7 +145,7 @@
       position: absolute;
       inset: 0;
       transform: translateX(var(--spot-dx, 0px));
-      transition: transform 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
+      transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
       will-change: transform;
     }
     .spot::before {
@@ -167,7 +183,7 @@
       position: absolute;
       inset: 0;
       z-index: 1;
-      background: radial-gradient(ellipse 78% 72% at 50% 42%, rgba(5, 8, 11, 0) 38%, rgba(5, 8, 11, 0.55) 72%, rgba(5, 8, 11, 0.9) 100%);
+      background: radial-gradient(ellipse 74% 68% at 50% 40%, rgba(5, 8, 11, 0) 30%, rgba(5, 8, 11, 0.66) 68%, rgba(5, 8, 11, 0.96) 100%);
     }
     .table::after {
       content: "";
@@ -319,7 +335,22 @@
     .slot:nth-child(4) { --r: 1.6deg; --y: 4px; }
     .slot.is-flipped { z-index: 10; }
 
+    /* Contact shadow on the table under each card (static, no filter) */
+    .slot::before {
+      content: "";
+      position: absolute;
+      left: 7%;
+      right: 7%;
+      bottom: -5px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.28) 45%, rgba(0, 0, 0, 0) 72%);
+      pointer-events: none;
+      transition: transform var(--sel-ease) ease, opacity var(--sel-ease) ease;
+    }
+
     .card {
+      position: relative;
       display: block;
       width: var(--card-w);
       height: var(--card-h);
@@ -332,16 +363,42 @@
       perspective: 1400px;
       transform-origin: 50% 15%;
       transform: translateY(var(--y)) rotate(var(--r));
-      transition: transform 0.38s cubic-bezier(0.2, 0.7, 0.2, 1);
+      transition: transform 0.24s cubic-bezier(0.2, 0.7, 0.2, 1);
     }
     .card:focus-visible { outline-offset: 6px; border-radius: 12px; }
+
+    /* Dimming layer: a flat black overlay above both faces, faded by opacity only */
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      border-radius: 10px;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--sel-ease) ease;
+    }
 
     /* Invitation: DropForge rests slightly raised until another card is hovered or focused */
     .slot.is-invite .card { transform: translateY(-8px) rotate(var(--r)); }
     .hand:where(:has(.card:hover, .card:focus-visible), .has-flipped) .slot.is-invite .card { transform: translateY(var(--y)) rotate(var(--r)); }
-    .hand .slot .card:hover,
-    .hand .slot .card:focus-visible { transform: translateY(-14px) rotate(0deg); }
     .hand .slot.is-flipped .card { transform: translateY(-10px) rotate(0deg) scale(var(--flip-scale)); }
+
+    /* Selection state: hover and keyboard focus on hover-capable devices only.
+       The active card lifts, straightens and brightens; the other three dim. */
+    @media (hover: hover) {
+      .slot:has(.card:hover, .card:focus-visible) { z-index: 5; }
+      .hand:not(.has-flipped) .slot .card:hover,
+      .hand:not(.has-flipped) .slot .card:focus-visible {
+        transform: translateY(var(--lift-y)) rotate(0deg) scale(var(--lift-scale));
+      }
+      .hand:not(.has-flipped) .slot:has(.card:hover, .card:focus-visible)::before { transform: translateY(4px) scaleX(1.08); opacity: 0.55; }
+      .hand:not(.has-flipped) .card:hover .front,
+      .hand:not(.has-flipped) .card:focus-visible .front { background-color: var(--paper-lit); }
+      .hand:has(.card:hover, .card:focus-visible):not(.has-flipped) .slot:not(:has(.card:hover, .card:focus-visible)) .card::after { opacity: var(--dim-alpha); }
+      .hand.has-flipped .slot:not(.is-flipped) .card::after { opacity: var(--dim-alpha); }
+    }
 
     .card-inner {
       position: relative;
@@ -361,42 +418,45 @@
       align-items: center;
       overflow: hidden;
       border-radius: 10px;
-      background: var(--noise-dark) 0 0 / 180px 180px, var(--ivory);
+      background-color: var(--ivory);
       color: var(--ink);
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
+      /* three layers: tight contact, mid shadow, soft ambient */
       box-shadow:
         inset 0 0 0 1px rgba(70, 45, 20, 0.16),
-        0 2px 4px rgba(0, 0, 0, 0.28),
-        0 8px 16px -2px rgba(0, 0, 0, 0.42),
-        0 20px 34px -8px rgba(0, 0, 0, 0.68);
-      transition: box-shadow 0.3s ease;
+        0 1px 1px rgba(0, 0, 0, 0.5),
+        0 4px 8px rgba(0, 0, 0, 0.36),
+        0 16px 28px -6px rgba(0, 0, 0, 0.64);
+      transition: box-shadow var(--sel-ease) ease, background-color var(--sel-ease) ease;
     }
-    .card:hover .face, .card:focus-visible .face {
-      box-shadow:
-        inset 0 0 0 1px rgba(70, 45, 20, 0.18),
-        0 4px 8px rgba(0, 0, 0, 0.32),
-        0 14px 24px -4px rgba(0, 0, 0, 0.48),
-        0 28px 42px -10px rgba(0, 0, 0, 0.74);
-    }
-    .is-flipped .face {
-      box-shadow:
-        inset 0 0 0 1px rgba(70, 45, 20, 0.22),
-        0 6px 12px rgba(0, 0, 0, 0.38),
-        0 18px 32px -4px rgba(0, 0, 0, 0.58),
-        0 36px 56px -10px rgba(0, 0, 0, 0.82);
-    }
-    .face::after {
+    /* Paper grain: SVG noise at 5% opacity, no image file, no filter at paint time */
+    .face::before {
       content: "";
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background: rgba(10, 8, 6, 0.38);
-      opacity: 0;
+      background: var(--noise-paper) 0 0 / 180px 180px;
+      opacity: 0.05;
       pointer-events: none;
-      transition: opacity 0.3s ease;
     }
-    .hand.has-flipped .slot:not(.is-flipped) .face::after { opacity: 1; }
+    @media (hover: hover) {
+      .hand:not(.has-flipped) .card:hover .face,
+      .hand:not(.has-flipped) .card:focus-visible .face {
+        box-shadow:
+          inset 0 0 0 1px rgba(70, 45, 20, 0.18),
+          0 2px 3px rgba(0, 0, 0, 0.42),
+          0 12px 20px -2px rgba(0, 0, 0, 0.5),
+          0 36px 54px -10px rgba(0, 0, 0, 0.8);
+      }
+    }
+    .is-flipped .face {
+      box-shadow:
+        inset 0 0 0 1px rgba(214, 186, 126, 0.14),
+        0 2px 3px rgba(0, 0, 0, 0.45),
+        0 14px 24px -4px rgba(0, 0, 0, 0.58),
+        0 38px 58px -10px rgba(0, 0, 0, 0.84);
+    }
 
     .front {
       justify-content: flex-start;
@@ -464,18 +524,23 @@
       color: var(--ink-muted);
     }
 
+    /* Method side: dark slate paper, cream text, double hairline border, subtle vignette */
     .back {
       transform: rotateY(180deg);
       justify-content: flex-start;
-      padding: 19px 10px 6px;
+      padding: 17px 13px 11px;
+      background-color: var(--slate);
+      background-image: radial-gradient(ellipse 78% 68% at 50% 42%, rgba(0, 0, 0, 0) 48%, rgba(0, 0, 0, 0.34) 100%);
+      color: var(--text);
     }
-    .band {
+    .back::before { background-image: var(--noise-light); background-size: 180px 180px; }
+    .back::after {
+      content: "";
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 14px;
-      border-bottom: 1px solid var(--burgundy);
+      inset: 5px;
+      border: 3px double var(--gold-muted);
+      border-radius: 6px;
+      pointer-events: none;
     }
     .m-label {
       display: block;
@@ -483,14 +548,14 @@
       font-size: 18px;
       font-weight: 600;
       line-height: 1;
-      color: var(--burgundy);
+      color: var(--text);
     }
     .m-text {
       display: block;
       margin-top: 5px;
       font-size: 12px;
       line-height: 1.3;
-      color: var(--ink);
+      color: var(--text);
       text-wrap: pretty;
     }
     .m-stack {
@@ -498,11 +563,11 @@
       width: 100%;
       margin-top: 8px;
       padding-top: 4px;
-      border-top: 1px solid rgba(104, 28, 45, 0.35);
+      border-top: 1px solid var(--gold-muted);
       font-size: 12px;
       font-weight: 600;
       line-height: 1.25;
-      color: var(--ink-muted);
+      color: var(--text-muted);
     }
     .mono {
       display: inline-grid;
@@ -515,7 +580,7 @@
       border-radius: 50%;
       letter-spacing: -0.04em;
     }
-    .back .mono { flex: none; margin-top: auto; width: 22px; height: 22px; font-size: 12px; }
+    .back .mono { flex: none; margin-top: auto; width: 22px; height: 22px; font-size: 12px; color: var(--gold-text); border-color: rgba(217, 196, 143, 0.6); }
 
     .view-link {
       position: absolute;
@@ -533,7 +598,7 @@
       text-decoration-color: rgba(236, 224, 207, 0.35);
       text-underline-offset: 4px;
       transform: translateX(-50%);
-      transition: transform 0.38s cubic-bezier(0.2, 0.7, 0.2, 1), color 0.2s ease;
+      transition: transform 0.24s cubic-bezier(0.2, 0.7, 0.2, 1), color 0.2s ease;
     }
     .view-link:hover { color: var(--text); text-decoration-color: var(--burgundy-dot); }
     .hand.has-flipped .slot:not(.is-flipped) .view-link { color: var(--text-faint); }
@@ -682,7 +747,7 @@
       .title { margin-top: 7px; font-size: 18px; line-height: 1.06; }
       .effect { margin-top: 12px; font-size: 12px; line-height: 1.25; }
       .f-stack { width: calc(100% - 58px); letter-spacing: 0.01em; }
-      .back { padding: 17px 8px 5px; }
+      .back { padding: 14px 12px 11px; }
       .m-label { font-size: 16px; }
       .m-text { margin-top: 4px; line-height: 1.24; }
       .m-stack { margin-top: 7px; padding-top: 3px; }
@@ -714,35 +779,33 @@
         animation-duration: 0.01ms !important;
       }
       .spot { transform: none !important; }
+      /* No lift, scale, rotation or shadow shift; dimming (opacity only) and focus outline still convey state */
       .hand .slot .card,
       .hand .slot.is-invite .card,
       .hand .slot .card:hover,
       .hand .slot .card:focus-visible,
-      .hand .slot.is-flipped .card { transform: none; }
+      .hand:not(.has-flipped) .slot .card:hover,
+      .hand:not(.has-flipped) .slot .card:focus-visible,
+      .hand .slot.is-flipped .card { transform: none !important; }
+      .slot::before,
+      .hand:not(.has-flipped) .slot:has(.card:hover, .card:focus-visible)::before { transform: none !important; }
       .slot.is-flipped .view-link { transform: translateX(-50%); }
       .bizcard, .bizcard:hover, .bizcard:focus-within { transform: none; }
       .deal .slot { opacity: 1; }
-      .card:hover .face { box-shadow: inset 0 0 0 2px var(--burgundy), 0 3px 6px rgba(0, 0, 0, 0.35); }
+      .hand:not(.has-flipped) .card:hover .face { box-shadow: inset 0 0 0 2px var(--burgundy), 0 3px 6px rgba(0, 0, 0, 0.35); }
     }
   </style>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
 
-  <!-- Shared SVG symbols and guilloche patterns (kept renderable: not display:none) -->
+  <!-- Shared SVG symbols (kept renderable: not display:none) -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <defs>
       <symbol id="s-spade" viewBox="0 0 24 24"><path d="M12 2C9.5 5.5 4 9 4 13.4a4 4 0 0 0 7.1 2.5L10 21h4l-1.1-5.1A4 4 0 0 0 20 13.4C20 9 14.5 5.5 12 2z"/></symbol>
       <symbol id="s-heart" viewBox="0 0 24 24"><path d="M12 21C9 18.6 3 14.4 3 9.3A4.7 4.7 0 0 1 12 7a4.7 4.7 0 0 1 9 2.3c0 5.1-6 9.3-9 11.7z"/></symbol>
       <symbol id="s-club" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4.2"/><circle cx="7" cy="13.5" r="4.2"/><circle cx="17" cy="13.5" r="4.2"/><path d="M11 12h2l1.2 9h-4.4z"/></symbol>
       <symbol id="s-diamond" viewBox="0 0 24 24"><path d="M12 2l7.5 10L12 22 4.5 12z"/></symbol>
-      <pattern id="gq-burg" width="9" height="18" patternUnits="userSpaceOnUse">
-        <rect width="9" height="18" fill="#f4e9d8"/>
-        <path d="M0 9Q2.25 2 4.5 9T9 9" fill="none" stroke="#681c2d" stroke-width=".7"/>
-        <path d="M0 9Q2.25 16 4.5 9T9 9" fill="none" stroke="#681c2d" stroke-width=".7"/>
-        <path d="M0 9Q2.25 5 4.5 9T9 9" fill="none" stroke="#681c2d" stroke-width=".45" opacity=".7"/>
-        <path d="M0 9Q2.25 13 4.5 9T9 9" fill="none" stroke="#681c2d" stroke-width=".45" opacity=".7"/>
-      </pattern>
     </defs>
   </svg>
 
@@ -789,7 +852,6 @@
                 <span class="f-stack"><span>Python</span></span>
               </span>
               <span class="face back" aria-hidden="true" inert>
-                <svg class="band" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#gq-burg)"/></svg>
                 <span class="sr-only">Microsoft Intune MQP.</span>
                 <span class="m-label">The method</span>
                 <span class="m-text">Hidden Markov Model sequence detector (Baum-Welch training, Viterbi decoding), 90.1% F1, 65% fewer false positives.</span>
@@ -815,7 +877,6 @@
                 <span class="f-stack"><span>Spring Boot</span> <span>PostgreSQL</span></span>
               </span>
               <span class="face back" aria-hidden="true" inert>
-                <svg class="band" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#gq-burg)"/></svg>
                 <span class="sr-only">DropForge.</span>
                 <span class="m-label">The method</span>
                 <span class="m-text">Atomic conditional inventory UPDATE, pessimistic row locks, 81 tests (24 unit · 57 integration) with Testcontainers.</span>
@@ -841,7 +902,6 @@
                 <span class="f-stack"><span>FastAPI</span> <span>PostgreSQL</span></span>
               </span>
               <span class="face back" aria-hidden="true" inert>
-                <svg class="band" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#gq-burg)"/></svg>
                 <span class="sr-only">Vigil.</span>
                 <span class="m-label">The method</span>
                 <span class="m-text">Partial unique index for incidents, ROW_NUMBER query loads each service’s latest latency, error rate and severity in one query.</span>
@@ -867,7 +927,6 @@
                 <span class="f-stack"><span>FastAPI</span> <span>PostgreSQL</span></span>
               </span>
               <span class="face back" aria-hidden="true" inert>
-                <svg class="band" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#gq-burg)"/></svg>
                 <span class="sr-only">Herd.</span>
                 <span class="m-label">The method</span>
                 <span class="m-text">Every comment reviewed before posting, rate limits, Turnstile, helpful-vote ranking.</span>
@@ -910,17 +969,19 @@
       var cards = slots.map(function (s) { return s.querySelector('.card'); });
       var spot = document.querySelector('.spot');
       var reduceMq = window.matchMedia('(prefers-reduced-motion: reduce)');
+      var hoverMq = window.matchMedia('(hover: hover)');
       var flipped = null;
       var hovered = null;
       var focused = null;
 
-      /* Spotlight: ease the cone toward the raised card; centered by default */
+      /* Spotlight: ease the light cone a little toward the active card; centered by default.
+         Moved with a compositor-only transform so no gradient is repainted. */
       function updateSpot() {
         var target = flipped || hovered || focused;
         var dx = 0;
         if (target && !reduceMq.matches && window.innerWidth > 860) {
           var r = target.getBoundingClientRect();
-          dx = (r.left + r.width / 2 - window.innerWidth / 2) * 0.55;
+          dx = (r.left + r.width / 2 - window.innerWidth / 2) * 0.3;
         }
         spot.style.setProperty('--spot-dx', dx.toFixed(1) + 'px');
       }
@@ -947,9 +1008,15 @@
 
       cards.forEach(function (card) {
         card.addEventListener('click', function () { flip(card); });
-        card.addEventListener('pointerenter', function () { hovered = card; updateSpot(); });
+        card.addEventListener('pointerenter', function (e) {
+          if (e.pointerType === 'touch' || !hoverMq.matches) return;
+          hovered = card; updateSpot();
+        });
         card.addEventListener('pointerleave', function () { if (hovered === card) hovered = null; updateSpot(); });
-        card.addEventListener('focus', function () { focused = card; updateSpot(); });
+        card.addEventListener('focus', function () {
+          if (!card.matches(':focus-visible')) return;
+          focused = card; updateSpot();
+        });
         card.addEventListener('blur', function () { if (focused === card) focused = null; updateSpot(); });
       });
 
