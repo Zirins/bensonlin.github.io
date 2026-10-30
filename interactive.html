@@ -756,6 +756,17 @@
     }
     .biz-links { display: flex; gap: 16px; margin-top: 2px; }
 
+    /* The email (152px) + Copy (46px) + gap need 204px of content width; the card's 216px minimum only has 190px.
+       Desktop only (phones are left as they were). Where the card has room it is widened to 234px (208px of content);
+       in the 1381-1439px window it sits right beside the hand and cannot grow, so there the Copy button wraps
+       under the email instead of being clipped. The same wrap protects against a wider fallback font. */
+    @media (min-width: 861px) {
+      .biz-email { flex-wrap: wrap; row-gap: 4px; }
+    }
+    @media (min-width: 861px) and (max-width: 1380px), (min-width: 1440px) {
+      .bizcard { width: clamp(234px, 14.3vw, 276px); }
+    }
+
     /* Method reveal (desktop, >= 1100 x 700 only; JS toggles .is-revealing).
        Selected card: enlarged left of the headline axis, method sheet 24px to its right.
        Others: dimmed, shrunk to pip + title in a row below. */
