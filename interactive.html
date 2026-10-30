@@ -60,18 +60,22 @@
       --flip-scale: 1.08;
       --link-space: 30px;
 
-      /* Selection state: others are dimmed by a black overlay of this alpha.
-         alpha 0.38 multiplies sRGB values by 0.62, i.e. the same result as brightness(0.62)
-         without animating a filter. Text on dimmed paper stays >= 4.6:1. */
+      /* Selection state: others are dimmed by a warm dark-brown overlay of this alpha
+         (opacity only, no animated filter). At 0.38 dimmed card text stays >= 4.57:1
+         even on the darkest grain pixels; 0.40 would drop burgundy below 4.5:1. */
+      --dim-tint: rgb(28, 14, 8);
       --dim-alpha: 0.38;
+      /* Shrunk cards in a reveal render their corner index at ~13px, where anti-aliasing thins the strokes;
+         a lighter dim keeps that index above 4.5:1 as measured on screen */
+      --dim-alpha-small: 0.32;
       --lift-y: -10px;
       --lift-scale: 1.05;
       --sel-ease: 0.2s;
 
-      /* Method side: dark slate paper, cream text, muted gold hairlines */
-      --slate: #232a35;
+      /* Method side: near-neutral charcoal, cream text, warm gold hairlines */
+      --slate: #14171c;
       --paper-lit: #fbf3e5;
-      --gold-muted: rgba(214, 186, 126, 0.5);
+      --gold-muted: rgba(206, 164, 96, 0.62);
       --gold-text: #d9c48f;
 
       --noise-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -.45'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -380,14 +384,14 @@
     }
     .card:focus-visible { outline-offset: 6px; border-radius: 12px; }
 
-    /* Dimming layer: a flat black overlay above both faces, faded by opacity only */
+    /* Dimming layer: a flat warm overlay above both faces, faded by opacity only */
     .card::after {
       content: "";
       position: absolute;
       inset: 0;
       z-index: 2;
       border-radius: 10px;
-      background: #000;
+      background: var(--dim-tint);
       opacity: 0;
       pointer-events: none;
       transition: opacity var(--sel-ease) ease;
@@ -537,13 +541,15 @@
       color: var(--ink-muted);
     }
 
-    /* Method side: dark slate paper, cream text, double hairline border, subtle vignette */
+    /* Method side: charcoal paper, cream text, double hairline border, top-left light and a subtle vignette */
     .back {
       transform: rotateY(180deg);
       justify-content: flex-start;
       padding: 17px 13px 11px;
       background-color: var(--slate);
-      background-image: radial-gradient(ellipse 78% 68% at 50% 42%, rgba(0, 0, 0, 0) 48%, rgba(0, 0, 0, 0.34) 100%);
+      background-image:
+        radial-gradient(ellipse 90% 70% at 0% 0%, rgba(255, 238, 210, 0.075), rgba(255, 238, 210, 0) 70%),
+        radial-gradient(ellipse 78% 68% at 50% 42%, rgba(0, 0, 0, 0) 48%, rgba(0, 0, 0, 0.34) 100%);
       color: var(--text);
     }
     .back::before, .method-sheet::before { background-image: var(--noise-light); background-size: 180px 180px; }
@@ -730,7 +736,8 @@
         flex-wrap: wrap;
         justify-content: center;
         gap: 32px 28px;
-        padding-bottom: 6px;
+        /* with main's 10px bottom padding this keeps >= 24px under the (tilted) small row */
+        padding-bottom: 16px;
       }
       .hand.is-revealing .slot {
         width: calc(var(--card-w) * var(--sk));
@@ -744,9 +751,25 @@
         margin-right: calc(50% + 12px);
       }
       .hand.is-revealing .slot::before { opacity: 0; }
-      .hand.is-revealing .slot .card { transform: rotate(var(--r)); }
-      .hand.is-revealing .slot.is-selected .card { transform: none; }
-      .hand.is-revealing .slot:not(.is-selected) .card::after { opacity: var(--dim-alpha); }
+      /* Every card in a reveal is tilted by its existing --r; the selected card's --r becomes -1deg */
+      .hand.is-revealing .slot.is-selected { --r: -1deg; }
+      /* Same tilt, but offset so it pivots on the card's center (the 50% 15% origin is kept for the hover lift):
+         that keeps the selected card's mid-height edge, and so the 24px gap, in place */
+      .hand.is-revealing .slot .card {
+        transform:
+          translate(calc(var(--card-h) * 0.35 * sin(var(--r))), calc(var(--card-h) * 0.35 * (1 - cos(var(--r)))))
+          rotate(var(--r));
+      }
+      .hand.is-revealing .slot:not(.is-selected) .card::after { opacity: var(--dim-alpha-small); }
+      .hand.is-revealing .slot.is-selected .face {
+        box-shadow:
+          inset 0 0 0 1px rgba(70, 45, 20, 0.18),
+          0 2px 3px rgba(0, 0, 0, 0.42),
+          0 12px 20px -4px rgba(0, 0, 0, 0.5),
+          0 34px 48px -6px rgba(0, 0, 0, 0.38),
+          0 52px 60px -18px rgba(0, 0, 0, 0.32);
+      }
+      .hand.is-revealing .slot.is-selected .face::before { opacity: 0.07; }
 
       /* Small cards: pip and title only; title sized so it renders >= 12px after the shrink */
       .hand.is-revealing .slot:not(.is-selected) .front { justify-content: center; }
@@ -760,7 +783,7 @@
       .hand.is-revealing .slot.is-selected .view-link {
         display: inline-flex;
         visibility: visible;
-        top: calc(100% + 4px);
+        top: calc(100% + 3px);
         left: calc(100% + 12px);
         color: var(--text);
         transform: translateX(-50%);
@@ -789,16 +812,25 @@
         border-radius: 10px;
         text-align: center;
         background-color: var(--slate);
-        background-image: radial-gradient(ellipse 78% 68% at 50% 42%, rgba(0, 0, 0, 0) 48%, rgba(0, 0, 0, 0.34) 100%);
+        background-image:
+          radial-gradient(ellipse 90% 70% at 0% 0%, rgba(255, 238, 210, 0.075), rgba(255, 238, 210, 0) 70%),
+          radial-gradient(ellipse 78% 68% at 50% 42%, rgba(0, 0, 0, 0) 48%, rgba(0, 0, 0, 0.34) 100%);
         color: var(--text);
-        transform-origin: 0 0;
-        transform: scale(var(--bk));
+        /* Scale from the top-left so the sheet fills the panel box, then tilt by --mt about its own center */
+        --mt: 1deg;
+        transform-origin: 50% 50%;
+        transform:
+          translate(calc((var(--bk) - 1) * var(--card-w) / 2), calc((var(--bk) - 1) * var(--card-h) / 2))
+          rotate(var(--mt)) scale(var(--bk));
         box-shadow:
-          inset 0 0 0 1px rgba(214, 186, 126, 0.14),
+          inset 0 0 0 1px rgba(206, 164, 96, 0.16),
           0 2px 3px rgba(0, 0, 0, 0.45),
-          0 14px 24px -4px rgba(0, 0, 0, 0.58),
-          0 38px 58px -10px rgba(0, 0, 0, 0.84);
+          0 12px 20px -4px rgba(0, 0, 0, 0.55),
+          0 34px 48px -6px rgba(0, 0, 0, 0.38),
+          0 52px 60px -18px rgba(0, 0, 0, 0.32);
       }
+      /* Short content sits centered between the top and the BL mark; long content falls back to top-aligned */
+      .method-sheet .m-label { margin-top: auto; }
       .method-sheet .mono { flex: none; margin-top: auto; width: 22px; height: 22px; font-size: 12px; color: var(--gold-text); border-color: rgba(217, 196, 143, 0.6); }
 
       @media (hover: hover) {
@@ -809,9 +841,11 @@
       /* Vertical fit, applied in order by JS only while a reveal is open */
       main.fit-tight { padding-top: 6px; }
       main.fit-tight .positioning { margin-top: 8px; }
-      main.fit-tight .intro .btn { margin-top: 10px; }
-      main.fit-tight .proof { margin-top: 8px; }
-      main.fit-tight .play { margin-top: 12px; }
+      main.fit-tight .intro .btn { margin-top: 8px; }
+      main.fit-tight .proof { margin-top: 6px; }
+      main.fit-tight .play { margin-top: 6px; }
+      main.fit-tight .hand.is-revealing { row-gap: 28px; }
+      main.fit-tight .hand.is-revealing .slot.is-selected .view-link { top: calc(100% + 2px); }
       main.fit-head h1 { font-size: clamp(46px, 8.5svh, 90px); }
       main.fit-avail .proof li:nth-child(2) { display: none; }
       main.fit-hint .hint { display: none; }
@@ -908,6 +942,10 @@
       .deal .slot { opacity: 1; }
       /* Reveal swaps instantly: no seat travel, no panel slide, no link fade */
       .seat { transition: none !important; }
+      .method-sheet { --mt: 0deg !important; }
+      /* The reveal measures layout synchronously while fitting; the 0.01ms rule above would otherwise
+         turn every size and margin change into a transition and hand it stale values */
+      main, main .intro, main .intro *, .play, .hand, .slot, .hint { transition: none !important; }
       .method-panel.is-in,
       .hand.is-revealing .slot.is-selected .view-link { animation: none !important; }
       .hand:not(.has-flipped, .is-revealing) .card:hover .face { box-shadow: inset 0 0 0 2px var(--burgundy), 0 3px 6px rgba(0, 0, 0, 0.35); }
@@ -1134,7 +1172,7 @@
       var panel = document.getElementById('method-panel');
       var sheet = panel.querySelector('.method-sheet');
       var FIT = ['fit-tight', 'fit-head', 'fit-avail', 'fit-hint', 'fit-metric'];
-      var BIG = 1.25, BIG_MIN = 1.2, SMALL = 0.55;
+      var BIG = 1.25, BIG_MIN = 1.15, SMALL = 0.55;
       var big = BIG;
       var selected = null;
       hand.style.setProperty('--sk', SMALL);
@@ -1204,11 +1242,11 @@
           setLevel(n); seatsFinal();
           if (overflowY() <= 0) return;
         }
-        var b = Math.floor((BIG - overflowY() / h) * 100) / 100;
+        var b = Math.floor((BIG - overflowY() / h) * 1000) / 1000;
         if (b >= BIG_MIN) { setBig(b); seatsFinal(); return; }
         setLevel(5); setBig(BIG); seatsFinal();
         var o = overflowY();
-        if (o > 0) { setBig(Math.max(1, Math.floor((BIG - o / h) * 100) / 100)); seatsFinal(); }
+        if (o > 0) { setBig(Math.max(1, Math.floor((BIG - o / h) * 1000) / 1000)); seatsFinal(); }
       }
 
       function applyLayout() {
