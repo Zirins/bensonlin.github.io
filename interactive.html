@@ -290,19 +290,17 @@
       transform: translateY(-1px);
     }
 
-    /* Play area: centered hand + contact card beside it */
+    /* Play area: centered hand + contact card anchored to right margin */
     .play {
+      position: relative;
       width: 100%;
       margin-top: clamp(16px, 4.4svh, 42px);
-      display: grid;
-      grid-template-columns: minmax(0, 0.62fr) auto minmax(0, 1fr);
-      grid-template-areas:
-        ". hand biz"
-        "hint hint hint";
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .hand {
-      grid-area: hand;
       display: flex;
       gap: clamp(20px, 2.4vw, 40px);
       list-style: none;
@@ -545,32 +543,32 @@
     }
 
     .hint {
-      grid-area: hint;
       margin-top: clamp(12px, 2.2svh, 24px);
       padding-inline: 20px;
       font-size: 13px;
       line-height: 1.5;
-      color: var(--text-faint);
+      color: var(--text-muted);
       text-align: center;
     }
 
     /* Contact card */
     .biz-area {
-      grid-area: biz;
+      position: absolute;
+      right: clamp(33px, calc((100vw - 1440px) * 0.12 + 33px), 96px);
+      top: calc(var(--card-h) - 140px);
       display: flex;
       align-items: flex-end;
-      justify-content: flex-start;
-      padding: 0 16px calc(var(--link-space) + 12px) clamp(22px, 2.2vw, 38px);
+      justify-content: center;
     }
     .bizcard {
       position: relative;
       flex: none;
-      width: clamp(232px, 15.8vw, 294px);
-      aspect-ratio: 3.5 / 2;
+      width: clamp(216px, 14.3vw, 276px);
+      min-height: clamp(126px, 15.8svh, 156px);
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 14px 16px 12px 18px;
+      padding: 13px 12px 11px 14px;
       border-radius: 4px;
       background: var(--noise-dark) 0 0 / 180px 180px, var(--stock);
       color: var(--ink);
@@ -647,14 +645,12 @@
     /* Deal-in (first visit per session only; WAAPI handles the motion) */
     .deal .slot { opacity: 0; }
 
-    /* Narrower desktop: no room beside the row for the contact card */
-    @media (max-width: 1180px) {
-      .play {
-        grid-template-columns: 1fr;
-        grid-template-areas: "hand" "hint" "biz";
-        justify-items: center;
+    /* Narrower desktop: drop contact card below the centered hand to prevent overlap */
+    @media (max-width: 1380px) {
+      .biz-area {
+        position: static;
+        padding: 32px 16px 24px;
       }
-      .biz-area { justify-content: center; padding: 36px 16px 24px; }
     }
 
     /* Short windows: keep only the flipped card's project link */
