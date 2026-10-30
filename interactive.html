@@ -335,6 +335,19 @@
     .slot:nth-child(4) { --r: 1.6deg; --y: 4px; }
     .slot.is-flipped { z-index: 10; }
 
+    /* Seat: sole owner of reveal motion (FLIP translate + scale via variables, set by JS).
+       The slot keeps the one-time deal-in; the card keeps tilt, lift and flip-lift. */
+    .seat {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: var(--card-w);
+      height: var(--card-h);
+      transform-origin: 0 0;
+      transform: translate(var(--fx, 0px), var(--fy, 0px)) scale(var(--k, 1));
+      transition: transform var(--seat-dur, 0.42s) cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
     /* Contact shadow on the table under each card (static, no filter) */
     .slot::before {
       content: "";
@@ -382,20 +395,20 @@
 
     /* Invitation: DropForge rests slightly raised until another card is hovered or focused */
     .slot.is-invite .card { transform: translateY(-8px) rotate(var(--r)); }
-    .hand:where(:has(.card:hover, .card:focus-visible), .has-flipped) .slot.is-invite .card { transform: translateY(var(--y)) rotate(var(--r)); }
+    .hand:where(:has(.card:hover, .card:focus-visible), .has-flipped, .is-revealing) .slot.is-invite .card { transform: translateY(var(--y)) rotate(var(--r)); }
     .hand .slot.is-flipped .card { transform: translateY(-10px) rotate(0deg) scale(var(--flip-scale)); }
 
     /* Selection state: hover and keyboard focus on hover-capable devices only.
        The active card lifts, straightens and brightens; the other three dim. */
     @media (hover: hover) {
       .slot:has(.card:hover, .card:focus-visible) { z-index: 5; }
-      .hand:not(.has-flipped) .slot .card:hover,
-      .hand:not(.has-flipped) .slot .card:focus-visible {
+      .hand:not(.has-flipped, .is-revealing) .slot .card:hover,
+      .hand:not(.has-flipped, .is-revealing) .slot .card:focus-visible {
         transform: translateY(var(--lift-y)) rotate(0deg) scale(var(--lift-scale));
       }
-      .hand:not(.has-flipped) .slot:has(.card:hover, .card:focus-visible)::before { transform: translateY(4px) scaleX(1.08); opacity: 0.55; }
-      .hand:not(.has-flipped) .card:hover .front,
-      .hand:not(.has-flipped) .card:focus-visible .front { background-color: var(--paper-lit); }
+      .hand:not(.has-flipped, .is-revealing) .slot:has(.card:hover, .card:focus-visible)::before { transform: translateY(4px) scaleX(1.08); opacity: 0.55; }
+      .hand:not(.has-flipped, .is-revealing) .card:hover .front,
+      .hand:not(.has-flipped, .is-revealing) .card:focus-visible .front { background-color: var(--paper-lit); }
       .hand:has(.card:hover, .card:focus-visible):not(.has-flipped) .slot:not(:has(.card:hover, .card:focus-visible)) .card::after { opacity: var(--dim-alpha); }
       .hand.has-flipped .slot:not(.is-flipped) .card::after { opacity: var(--dim-alpha); }
     }
@@ -431,7 +444,7 @@
       transition: box-shadow var(--sel-ease) ease, background-color var(--sel-ease) ease;
     }
     /* Paper grain: SVG noise at 5% opacity, no image file, no filter at paint time */
-    .face::before {
+    .face::before, .method-sheet::before {
       content: "";
       position: absolute;
       inset: 0;
@@ -441,8 +454,8 @@
       pointer-events: none;
     }
     @media (hover: hover) {
-      .hand:not(.has-flipped) .card:hover .face,
-      .hand:not(.has-flipped) .card:focus-visible .face {
+      .hand:not(.has-flipped, .is-revealing) .card:hover .face,
+      .hand:not(.has-flipped, .is-revealing) .card:focus-visible .face {
         box-shadow:
           inset 0 0 0 1px rgba(70, 45, 20, 0.18),
           0 2px 3px rgba(0, 0, 0, 0.42),
@@ -533,8 +546,8 @@
       background-image: radial-gradient(ellipse 78% 68% at 50% 42%, rgba(0, 0, 0, 0) 48%, rgba(0, 0, 0, 0.34) 100%);
       color: var(--text);
     }
-    .back::before { background-image: var(--noise-light); background-size: 180px 180px; }
-    .back::after {
+    .back::before, .method-sheet::before { background-image: var(--noise-light); background-size: 180px 180px; }
+    .back::after, .method-sheet::after {
       content: "";
       position: absolute;
       inset: 5px;
@@ -707,6 +720,107 @@
     }
     .biz-links { display: flex; gap: 16px; margin-top: 2px; }
 
+    /* Method reveal (desktop, >= 1100 x 700 only; JS toggles .is-revealing).
+       Selected card: enlarged left of the headline axis, method sheet 24px to its right.
+       Others: dimmed, shrunk to pip + title in a row below. */
+    .method-panel { display: none; }
+    @media (min-width: 1100px) and (min-height: 700px) {
+      .hand.is-revealing {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 32px 28px;
+        padding-bottom: 6px;
+      }
+      .hand.is-revealing .slot {
+        width: calc(var(--card-w) * var(--sk));
+        height: calc(var(--card-h) * var(--sk));
+      }
+      .hand.is-revealing .slot.is-selected {
+        order: -1;
+        width: calc(var(--card-w) * var(--bk));
+        height: calc(var(--card-h) * var(--bk));
+        margin-left: calc(50% - var(--card-w) * var(--bk) - 12px);
+        margin-right: calc(50% + 12px);
+      }
+      .hand.is-revealing .slot::before { opacity: 0; }
+      .hand.is-revealing .slot .card { transform: rotate(var(--r)); }
+      .hand.is-revealing .slot.is-selected .card { transform: none; }
+      .hand.is-revealing .slot:not(.is-selected) .card::after { opacity: var(--dim-alpha); }
+
+      /* Small cards: pip and title only; title sized so it renders >= 12px after the shrink */
+      .hand.is-revealing .slot:not(.is-selected) .front { justify-content: center; }
+      .hand.is-revealing .slot:not(.is-selected) .pip { margin-top: 0; }
+      .hand.is-revealing .slot:not(.is-selected) .effect,
+      .hand.is-revealing .slot:not(.is-selected) .f-stack { display: none; }
+      .hand.is-revealing .slot:not(.is-selected) .title { font-size: 22px; }
+      .hand.is-revealing .slot:not(.is-selected) .nw { white-space: normal; }
+
+      .hand.is-revealing .slot .view-link { display: none; }
+      .hand.is-revealing .slot.is-selected .view-link {
+        display: inline-flex;
+        visibility: visible;
+        top: calc(100% + 4px);
+        left: calc(100% + 12px);
+        color: var(--text);
+        transform: translateX(-50%);
+        animation: rv-fade 0.3s 0.18s both;
+      }
+
+      .hand.is-revealing .slot.is-selected .method-panel {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: calc(100% + 24px);
+        z-index: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .method-panel.is-in { animation: rv-panel 0.42s 0.04s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+      .method-sheet {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: var(--card-w);
+        height: var(--card-h);
+        padding: 17px 13px 11px;
+        overflow: hidden;
+        border-radius: 10px;
+        text-align: center;
+        background-color: var(--slate);
+        background-image: radial-gradient(ellipse 78% 68% at 50% 42%, rgba(0, 0, 0, 0) 48%, rgba(0, 0, 0, 0.34) 100%);
+        color: var(--text);
+        transform-origin: 0 0;
+        transform: scale(var(--bk));
+        box-shadow:
+          inset 0 0 0 1px rgba(214, 186, 126, 0.14),
+          0 2px 3px rgba(0, 0, 0, 0.45),
+          0 14px 24px -4px rgba(0, 0, 0, 0.58),
+          0 38px 58px -10px rgba(0, 0, 0, 0.84);
+      }
+      .method-sheet .mono { flex: none; margin-top: auto; width: 22px; height: 22px; font-size: 12px; color: var(--gold-text); border-color: rgba(217, 196, 143, 0.6); }
+
+      @media (hover: hover) {
+        .hand.is-revealing .slot:not(.is-selected) .card:hover::after,
+        .hand.is-revealing .slot:not(.is-selected) .card:focus-visible::after { opacity: 0.18; }
+      }
+
+      /* Vertical fit, applied in order by JS only while a reveal is open */
+      main.fit-tight { padding-top: 6px; }
+      main.fit-tight .positioning { margin-top: 8px; }
+      main.fit-tight .intro .btn { margin-top: 10px; }
+      main.fit-tight .proof { margin-top: 8px; }
+      main.fit-tight .play { margin-top: 12px; }
+      main.fit-head h1 { font-size: clamp(46px, 8.5svh, 90px); }
+      main.fit-avail .proof li:nth-child(2) { display: none; }
+      main.fit-hint .hint { display: none; }
+      main.fit-metric .proof li:nth-child(1) { display: none; }
+      main.fit-avail.fit-metric .proof { display: none; }
+    }
+    @keyframes rv-fade { from { opacity: 0; } }
+    @keyframes rv-panel { from { opacity: 0; transform: translateX(-40%); } }
+
     /* Deal-in (first visit per session only; WAAPI handles the motion) */
     .deal .slot { opacity: 0; }
 
@@ -784,15 +898,19 @@
       .hand .slot.is-invite .card,
       .hand .slot .card:hover,
       .hand .slot .card:focus-visible,
-      .hand:not(.has-flipped) .slot .card:hover,
-      .hand:not(.has-flipped) .slot .card:focus-visible,
+      .hand:not(.has-flipped, .is-revealing) .slot .card:hover,
+      .hand:not(.has-flipped, .is-revealing) .slot .card:focus-visible,
       .hand .slot.is-flipped .card { transform: none !important; }
       .slot::before,
-      .hand:not(.has-flipped) .slot:has(.card:hover, .card:focus-visible)::before { transform: none !important; }
+      .hand:not(.has-flipped, .is-revealing) .slot:has(.card:hover, .card:focus-visible)::before { transform: none !important; }
       .slot.is-flipped .view-link { transform: translateX(-50%); }
       .bizcard, .bizcard:hover, .bizcard:focus-within { transform: none; }
       .deal .slot { opacity: 1; }
-      .hand:not(.has-flipped) .card:hover .face { box-shadow: inset 0 0 0 2px var(--burgundy), 0 3px 6px rgba(0, 0, 0, 0.35); }
+      /* Reveal swaps instantly: no seat travel, no panel slide, no link fade */
+      .seat { transition: none !important; }
+      .method-panel.is-in,
+      .hand.is-revealing .slot.is-selected .view-link { animation: none !important; }
+      .hand:not(.has-flipped, .is-revealing) .card:hover .face { box-shadow: inset 0 0 0 2px var(--burgundy), 0 3px 6px rgba(0, 0, 0, 0.35); }
     }
   </style>
 </head>
@@ -840,7 +958,7 @@
       <ul class="hand">
         <!-- A♠ Microsoft Intune MQP -->
         <li class="slot">
-          <button class="card" type="button" aria-pressed="false">
+          <div class="seat"><button class="card" type="button" aria-pressed="false">
             <span class="card-inner">
               <span class="face front">
                 <span class="corner tl s-navy" aria-hidden="true"><span class="rank">A</span><svg class="suit"><use href="#s-spade"/></svg></span>
@@ -859,13 +977,13 @@
                 <span class="mono" aria-hidden="true">BL</span>
               </span>
             </span>
-          </button>
+          </button></div>
           <a class="view-link" href="index.html#experience" aria-label="View the Microsoft Intune MQP project">View project <span aria-hidden="true">→</span></a>
         </li>
 
         <!-- K♥ DropForge -->
         <li class="slot is-invite">
-          <button class="card" type="button" aria-pressed="false">
+          <div class="seat"><button class="card" type="button" aria-pressed="false">
             <span class="card-inner">
               <span class="face front">
                 <span class="corner tl s-burg" aria-hidden="true"><span class="rank">K</span><svg class="suit"><use href="#s-heart"/></svg></span>
@@ -884,13 +1002,13 @@
                 <span class="mono" aria-hidden="true">BL</span>
               </span>
             </span>
-          </button>
+          </button></div>
           <a class="view-link" href="index.html#dropforge" aria-label="View the DropForge project">View project <span aria-hidden="true">→</span></a>
         </li>
 
         <!-- Q♣ Vigil -->
         <li class="slot">
-          <button class="card" type="button" aria-pressed="false">
+          <div class="seat"><button class="card" type="button" aria-pressed="false">
             <span class="card-inner">
               <span class="face front">
                 <span class="corner tl s-navy" aria-hidden="true"><span class="rank">Q</span><svg class="suit"><use href="#s-club"/></svg></span>
@@ -909,13 +1027,13 @@
                 <span class="mono" aria-hidden="true">BL</span>
               </span>
             </span>
-          </button>
+          </button></div>
           <a class="view-link" href="index.html#vigil" aria-label="View the Vigil project">View project <span aria-hidden="true">→</span></a>
         </li>
 
         <!-- J♦ Herd -->
         <li class="slot">
-          <button class="card" type="button" aria-pressed="false">
+          <div class="seat"><button class="card" type="button" aria-pressed="false">
             <span class="card-inner">
               <span class="face front">
                 <span class="corner tl s-burg" aria-hidden="true"><span class="rank">J</span><svg class="suit"><use href="#s-diamond"/></svg></span>
@@ -934,10 +1052,11 @@
                 <span class="mono" aria-hidden="true">BL</span>
               </span>
             </span>
-          </button>
+          </button></div>
           <a class="view-link" href="index.html#herd" aria-label="View the Herd project">View project <span aria-hidden="true">→</span></a>
         </li>
       </ul>
+      <div class="method-panel" id="method-panel" role="region" aria-label="The method"><div class="method-sheet"></div></div>
 
       <p class="hint">Click a card to turn it over.</p>
 
@@ -977,7 +1096,7 @@
       /* Spotlight: ease the light cone a little toward the active card; centered by default.
          Moved with a compositor-only transform so no gradient is repainted. */
       function updateSpot() {
-        var target = flipped || hovered || focused;
+        var target = flipped || (document.querySelector('.hand.is-revealing') ? null : hovered || focused);
         var dx = 0;
         if (target && !reduceMq.matches && window.innerWidth > 860) {
           var r = target.getBoundingClientRect();
@@ -1006,8 +1125,151 @@
         updateSpot();
       }
 
+      /* Method reveal (desktop >= 1100 x 700). Below that, the in-place flip above is used unchanged. */
+      var revealMq = window.matchMedia('(min-width: 1100px) and (min-height: 700px)');
+      var main = document.querySelector('main');
+      var hint = document.querySelector('.hint');
+      var bizArea = document.querySelector('.biz-area');
+      var seats = slots.map(function (s) { return s.querySelector('.seat'); });
+      var panel = document.getElementById('method-panel');
+      var sheet = panel.querySelector('.method-sheet');
+      var FIT = ['fit-tight', 'fit-head', 'fit-avail', 'fit-hint', 'fit-metric'];
+      var BIG = 1.25, BIG_MIN = 1.2, SMALL = 0.55;
+      var big = BIG;
+      var selected = null;
+      hand.style.setProperty('--sk', SMALL);
+      hand.style.setProperty('--bk', BIG);
+
+      function setAria() {
+        var reveal = revealMq.matches;
+        cards.forEach(function (c) {
+          if (reveal) {
+            c.removeAttribute('aria-pressed');
+            c.setAttribute('aria-expanded', c === selected ? 'true' : 'false');
+            c.setAttribute('aria-controls', 'method-panel');
+          } else {
+            c.removeAttribute('aria-expanded');
+            c.removeAttribute('aria-controls');
+            c.setAttribute('aria-pressed', c === flipped ? 'true' : 'false');
+          }
+        });
+      }
+
+      function targetK(i) {
+        if (!selected) return 1;
+        return slots[i].contains(selected) ? big : SMALL;
+      }
+      function setSeat(i, fx, fy, k, animate) {
+        var st = seats[i].style;
+        if (animate) st.removeProperty('--seat-dur'); else st.setProperty('--seat-dur', '0s');
+        st.setProperty('--fx', fx.toFixed(2) + 'px');
+        st.setProperty('--fy', fy.toFixed(2) + 'px');
+        st.setProperty('--k', k);
+      }
+      /* Seat origin as drawn now (subpixel), and the same origin with the seat's own translate removed */
+      function seatMatrix(i) {
+        var t = getComputedStyle(seats[i]).transform;
+        return t === 'none' ? new DOMMatrix() : new DOMMatrix(t);
+      }
+      function layoutPos(i) {
+        var r = seats[i].getBoundingClientRect(), m = seatMatrix(i);
+        return { x: r.left - m.e, y: r.top - m.f };
+      }
+      function readSeats() {
+        return seats.map(function (seat, i) {
+          var r = seat.getBoundingClientRect();
+          return { x: r.left, y: r.top, k: seatMatrix(i).a };
+        });
+      }
+
+      function overflowY() {
+        var y = window.scrollY;
+        var need = hand.getBoundingClientRect().bottom + y;
+        if (getComputedStyle(hint).display !== 'none') need = hint.getBoundingClientRect().bottom + y;
+        need += parseFloat(getComputedStyle(main).paddingBottom) || 0;
+        /* With the contact card out of flow the page should not scroll at all; when it is in flow
+           (narrower windows) it already sits below the fold, so only the stage itself is fitted. */
+        if (getComputedStyle(bizArea).position === 'absolute') need = Math.max(need, document.documentElement.scrollHeight);
+        return need - window.innerHeight;
+      }
+      function setLevel(n) { FIT.forEach(function (c, i) { main.classList.toggle(c, i < n); }); }
+      function setBig(b) { big = b; hand.style.setProperty('--bk', b); }
+      function seatsFinal() { seats.forEach(function (s, i) { setSeat(i, 0, 0, targetK(i), false); }); }
+
+      /* Free vertical space in the agreed order; keep ~1.25x unless only the metric line is left to collapse */
+      function fit() {
+        var h = seats[0].offsetHeight;
+        setBig(BIG);
+        for (var n = 0; n <= 4; n++) {
+          setLevel(n); seatsFinal();
+          if (overflowY() <= 0) return;
+        }
+        var b = Math.floor((BIG - overflowY() / h) * 100) / 100;
+        if (b >= BIG_MIN) { setBig(b); seatsFinal(); return; }
+        setLevel(5); setBig(BIG); seatsFinal();
+        var o = overflowY();
+        if (o > 0) { setBig(Math.max(1, Math.floor((BIG - o / h) * 100) / 100)); seatsFinal(); }
+      }
+
+      function applyLayout() {
+        slots.forEach(function (s) { s.classList.toggle('is-selected', !!selected && s.contains(selected)); });
+        hand.classList.toggle('is-revealing', !!selected);
+        play.classList.toggle('is-revealing', !!selected);
+        if (selected) {
+          selected.closest('.slot').appendChild(panel);
+          fit();
+        } else {
+          setLevel(0); setBig(BIG); seatsFinal();
+        }
+      }
+
+      function fillPanel(card) {
+        var back = card.querySelector('.back');
+        sheet.textContent = '';
+        Array.prototype.forEach.call(back.childNodes, function (n) { sheet.appendChild(n.cloneNode(true)); });
+        panel.setAttribute('aria-label', card.querySelector('.title').textContent + ': The method');
+        panel.classList.remove('is-in');
+        void panel.offsetWidth;
+        panel.classList.add('is-in');
+      }
+
+      /* Open, switch or close. FLIP: measure, change layout, invert, then release. */
+      function reveal(card) {
+        var first = readSeats();
+        selected = selected === card ? null : card;
+        if (selected) fillPanel(selected);
+        applyLayout();
+        if (!reduceMq.matches) {
+          seats.forEach(function (s, i) {
+            var p = layoutPos(i);
+            setSeat(i, first[i].x - p.x, first[i].y - p.y, first[i].k, false);
+          });
+          void hand.offsetWidth;
+          seats.forEach(function (s, i) { setSeat(i, 0, 0, targetK(i), true); });
+        }
+        setAria();
+        updateSpot();
+      }
+
+      function resetReveal() {
+        if (!selected) return;
+        selected = null;
+        applyLayout();
+      }
+
+      revealMq.addEventListener('change', function () {
+        resetReveal();
+        if (flipped) flip(flipped);
+        setAria();
+        updateSpot();
+      });
+      window.addEventListener('resize', function () { if (selected) applyLayout(); });
+      setAria();
+
       cards.forEach(function (card) {
-        card.addEventListener('click', function () { flip(card); });
+        card.addEventListener('click', function () {
+          if (revealMq.matches) reveal(card); else flip(card);
+        });
         card.addEventListener('pointerenter', function (e) {
           if (e.pointerType === 'touch' || !hoverMq.matches) return;
           hovered = card; updateSpot();
@@ -1022,12 +1284,17 @@
 
       document.addEventListener('click', function (e) {
         if (flipped && !e.target.closest('.card')) flip(flipped);
+        if (selected && !e.target.closest('.card, .method-panel, a, button, .bizcard')) reveal(selected);
       });
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && flipped) {
           var c = flipped;
           flip(c);
           c.focus();
+        } else if (e.key === 'Escape' && selected) {
+          var s = selected;
+          reveal(s);
+          s.focus();
         }
       });
       window.addEventListener('resize', updateSpot);
