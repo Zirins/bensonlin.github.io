@@ -16,11 +16,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="assets/table-plate-16x9.webp" type="image/webp">
   <script>
-    /* Flags set before first paint: JS available, and whether to play the one-time deal-in. */
+    /* Flags set before first paint: JS available, whether the table photo is in use, and whether to play the one-time deal-in. */
     (function () {
       var root = document.documentElement;
       root.classList.add('js');
+      /* Table photo: assumed available so the first paint is already right; if the file fails to load,
+         has-plate comes off and the CSS-gradient table (the original look) takes over again. */
+      root.classList.add('has-plate');
+      var plate = new Image();
+      plate.onerror = function () { root.classList.remove('has-plate'); };
+      plate.src = 'assets/table-plate-16x9.webp';
       try {
         var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (!reduce && !window.sessionStorage.getItem('bl-dealt')) root.classList.add('deal');
@@ -36,6 +43,11 @@
       --table: #1b1c1e;
       --table-deep: #131418;
       --table-edge: #05080b;
+      /* Average color of the table photo (rgb 20,20,19): page and table sit on this until the image paints */
+      --plate-avg: #141413;
+      /* The photo already has a light pool, so the CSS spotlight is turned down while the photo is in use
+         (measured at 1440x780: at 1.0 it adds ~46% on top of the photo's mid-screen pool, at 0.3 about 14%) */
+      --spot-plate: 0.3;
       --light: 255, 228, 196;
       --ivory: #f4e9d8;
       --stock: #f4e9d8;
@@ -148,6 +160,21 @@
       pointer-events: none;
       background: var(--table);
       overflow: hidden;
+    }
+    /* Table photo: a plain background (no filter), cover, centered at the top, under the vignette and grain
+       layers below. Without .has-plate (image failed to load) none of this applies and the gradients above stand alone. */
+    .has-plate body { background: var(--plate-avg); }
+    .has-plate .table {
+      background-color: var(--plate-avg);
+      background-image: url("assets/table-plate-16x9.webp");
+      background-repeat: no-repeat;
+      background-position: 50% 0;
+      background-size: cover;
+    }
+    .has-plate .spot { opacity: var(--spot-plate); }
+    @media (max-width: 860px) {
+      /* Phones: the same photo, still centered at the top, under a slightly darker wash */
+      .has-plate .table { background-image: linear-gradient(rgba(5, 8, 11, 0.3), rgba(5, 8, 11, 0.3)), url("assets/table-plate-16x9.webp"); }
     }
     .spot {
       position: absolute;
