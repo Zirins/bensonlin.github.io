@@ -58,7 +58,7 @@ All active files are placed in a flat structure directly at the repository root:
 - `.agents/` — Directory present in the repository root (currently empty).
 
 **Conventions:**
-- Assets are referenced using flat root relative paths (e.g., `src="headshot.jpg"`, `href="./Benson_Lin_Resume.pdf"`). There are no subfolders like `src/`, `assets/`, `images/`, `css/`, or `js/`.
+- Assets are referenced using flat root relative paths (e.g., `src="headshot.jpg"`, `href="./Benson_Lin_Resume.pdf"`). There are no `src/`, `images/`, `css/`, or `js/` subfolders. The only subfolder is `assets/`, which holds the optimized table-plate WebP (`assets/table-plate-16x9.webp`, used by `interactive.html`). The original `table-plate-16x9.png` plate is gitignored and stays out of the repo.
 
 ---
 
