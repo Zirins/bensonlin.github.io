@@ -23,7 +23,7 @@
       var root = document.documentElement;
       root.classList.add('js');
       /* Table photo: assumed available so the first paint is already right; if the file fails to load,
-         has-plate comes off and the CSS-gradient table (the original look) takes over again. */
+         has-plate comes off and the flat table colour with its spotlight, vignette and grain (the original look) takes over again. */
       root.classList.add('has-plate');
       var plate = new Image();
       plate.onerror = function () { root.classList.remove('has-plate'); };
@@ -32,6 +32,12 @@
         var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (!reduce && !window.sessionStorage.getItem('bl-dealt')) root.classList.add('deal');
       } catch (e) { /* storage blocked: skip the deal-in */ }
+      /* Safety net: .deal keeps the cards at opacity 0 until the main script (end of body) takes it off. If that
+         script throws or never runs, take it off here 1.5s after parsing so the cards can never stay invisible.
+         DOMContentLoaded fires after inline scripts, so a healthy page has already removed it and this is a no-op. */
+      document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function () { root.classList.remove('deal'); }, 1500);
+      });
     })();
   </script>
   <style>
@@ -41,8 +47,6 @@
 
     :root {
       --table: #1b1c1e;
-      --table-deep: #131418;
-      --table-edge: #05080b;
       /* Average color of the table photo (rgb 20,20,19): page and table sit on this until the image paints */
       --plate-avg: #141413;
       /* The photo already has a light pool, so the CSS spotlight is turned down while the photo is in use
@@ -162,7 +166,7 @@
       overflow: hidden;
     }
     /* Table photo: a plain background (no filter), cover, centered at the top, under the vignette and grain
-       layers below. Without .has-plate (image failed to load) none of this applies and the gradients above stand alone. */
+       layers below. Without .has-plate (image failed to load) none of this applies and the flat --table colour stands alone under the spotlight, vignette and grain. */
     .has-plate body { background: var(--plate-avg); }
     .has-plate .table {
       background-color: var(--plate-avg);
@@ -921,14 +925,6 @@
       }
     }
 
-    /* Short windows: keep only the flipped card's project link */
-    @media (min-width: 861px) and (max-height: 760px) {
-      .hand { --link-space: 0px; }
-      .view-link { visibility: hidden; }
-      .slot.is-flipped .view-link { visibility: visible; }
-      .play.has-flipped .hint { opacity: 0; }
-    }
-
     /* Mobile and small tablets: 2x2 grid, flip in place */
     @media (max-width: 860px) {
       :root {
@@ -1071,7 +1067,7 @@
               </span>
             </span>
           </button></div>
-          <a class="view-link" href="index.html#experience" aria-label="View the Microsoft Intune MQP project">View project <span aria-hidden="true">→</span></a>
+          <a class="view-link" href="index.html#experience" aria-label="View project: Microsoft Intune MQP">View project <span aria-hidden="true">→</span></a>
         </li>
 
         <!-- K♥ DropForge -->
@@ -1096,7 +1092,7 @@
               </span>
             </span>
           </button></div>
-          <a class="view-link" href="index.html#dropforge" aria-label="View the DropForge project">View project <span aria-hidden="true">→</span></a>
+          <a class="view-link" href="index.html#dropforge" aria-label="View project: DropForge">View project <span aria-hidden="true">→</span></a>
         </li>
 
         <!-- Q♣ Vigil -->
@@ -1121,7 +1117,7 @@
               </span>
             </span>
           </button></div>
-          <a class="view-link" href="index.html#vigil" aria-label="View the Vigil project">View project <span aria-hidden="true">→</span></a>
+          <a class="view-link" href="index.html#vigil" aria-label="View project: Vigil">View project <span aria-hidden="true">→</span></a>
         </li>
 
         <!-- J♦ Herd -->
@@ -1146,10 +1142,11 @@
               </span>
             </span>
           </button></div>
-          <a class="view-link" href="index.html#herd" aria-label="View the Herd project">View project <span aria-hidden="true">→</span></a>
+          <a class="view-link" href="index.html#herd" aria-label="View project: Herd">View project <span aria-hidden="true">→</span></a>
         </li>
       </ul>
       <div class="method-panel" id="method-panel" role="region" aria-label="The method"><div class="method-sheet"></div></div>
+      <div class="sr-only" id="method-status" role="status" aria-live="polite" aria-atomic="true"></div>
 
       <p class="hint">Click a card to turn it over.</p>
 
@@ -1232,6 +1229,13 @@
       var selected = null;
       hand.style.setProperty('--sk', SMALL);
       hand.style.setProperty('--bk', BIG);
+
+      /* Live status for screen readers: says which method is shown when a reveal opens or switches, clears on close.
+         Set only on those changes (never on resize), so the same text is not announced twice. */
+      var methodStatus = document.getElementById('method-status');
+      function announce() {
+        methodStatus.textContent = selected ? selected.querySelector('.title').textContent + ': method shown' : '';
+      }
 
       function setAria() {
         var reveal = revealMq.matches;
@@ -1329,7 +1333,9 @@
         hand.classList.toggle('is-revealing', !!selected);
         play.classList.toggle('is-revealing', !!selected);
         if (selected) {
-          selected.closest('.slot').appendChild(panel);
+          /* Re-appending an element restarts its slide-in, so only move the panel when it is not already there */
+          var home = selected.closest('.slot');
+          if (panel.parentNode !== home) home.appendChild(panel);
           fit();
         } else {
           setLevel(0); setBig(BIG); seatsFinal();
@@ -1338,8 +1344,9 @@
       }
 
       /* Reveal panel only: show the method sentence as centered clause lines. The split is by top-level
-         commas (never inside parentheses), as many as data-breaks says; the comma at each break is dropped
-         and no word is added, removed or reworded. Anything that does not split as expected stays one block. */
+         commas (never inside parentheses), as many as data-breaks says. The comma at each break is not shown
+         but stays in the DOM as a visually hidden span, so screen readers and copied text keep the original
+         sentence; no word is added, removed or reworded. Anything that does not split as expected stays one block. */
       function splitMethod(el) {
         var n = parseInt(el.getAttribute('data-breaks'), 10);
         if (!n) return;
@@ -1359,6 +1366,12 @@
           var line = document.createElement('span');
           line.className = 'm-line';
           line.textContent = p;
+          if (i < parts.length - 1) {
+            var comma = document.createElement('span');
+            comma.className = 'sr-only';
+            comma.textContent = ',';
+            line.appendChild(comma);
+          }
           if (i) el.appendChild(document.createTextNode(' ')); /* keeps copied and read text word-separated */
           el.appendChild(line);
         });
@@ -1391,6 +1404,7 @@
           seats.forEach(function (s, i) { setSeat(i, 0, 0, targetK(i), true); });
         }
         setAria();
+        announce();
         updateSpot();
       }
 
@@ -1398,6 +1412,7 @@
         if (!selected) return;
         selected = null;
         applyLayout();
+        announce();
       }
 
       revealMq.addEventListener('change', function () {
@@ -1406,7 +1421,15 @@
         setAria();
         updateSpot();
       });
-      window.addEventListener('resize', function () { if (selected) applyLayout(); });
+      /* Resize with a reveal open: re-fit at most once per frame, however many resize events arrive */
+      var resizeFrame = 0;
+      window.addEventListener('resize', function () {
+        if (!selected || resizeFrame) return;
+        resizeFrame = window.requestAnimationFrame(function () {
+          resizeFrame = 0;
+          if (selected) applyLayout();
+        });
+      });
       setAria();
 
       cards.forEach(function (card) {
